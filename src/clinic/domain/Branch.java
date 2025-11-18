@@ -1,0 +1,15 @@
+package clinic.domain;
+
+public enum Branch {
+    CARDIOLOGY,
+    DERMATOLOGY,
+    NEUROLOGY,
+    PEDIATRICS,
+    RADIOLOGY,
+    ORTHOPEDICS,
+    ONCOLOGY,
+    FAMILY_MEDICINE,
+    INTERNAL_MEDICINE,
+    GASTROENTEROLOGY,
+    GYNECOLOGY
+}

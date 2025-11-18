@@ -1,6 +1,8 @@
 package clinic.cli;
 
+import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorRepository;
+import clinic.service.AppointmentService;
 import clinic.service.DoctorService;
 import clinic.service.PatientService;
 
@@ -16,6 +18,9 @@ public class MainMenu {
         DoctorMenu doctorMenu = new DoctorMenu(doctorService);
         PatientService patientService = new PatientService();
         PatientMenu patientMenu = new PatientMenu(patientService);
+        AppointmentRepository appointmentRepository = new AppointmentRepository();
+        AppointmentService appointmentService = new AppointmentService(appointmentRepository);
+        AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService);
 
         System.out.println("Welcome to the Clinic Patient Management System");
         while(isTrue){
@@ -31,6 +36,7 @@ public class MainMenu {
                     doctorMenu.showTheDoctorMenu();
                     break;
                 case 3:
+
                     break;
                 case 5:
                     showTheMenu();
