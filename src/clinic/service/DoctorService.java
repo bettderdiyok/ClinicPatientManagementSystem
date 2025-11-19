@@ -2,6 +2,7 @@ package clinic.service;
 import clinic.domain.Branch;
 import clinic.domain.Doctor;
 import clinic.exception.DuplicateDoctorException;
+import clinic.exception.InvalidNationalIdException;
 import clinic.repo.DoctorRepository;
 
 public class DoctorService {
@@ -12,25 +13,28 @@ public class DoctorService {
     }
 
     public void addDoctor(String nationalId, String fullname, int branchNum){
-        if(isValidNationalId(nationalId)){
-            if(isValidFullname(fullname)){
-                if(isValidBranch(branchNum)){
-                    if(doctorRepository.existsByNationalId(nationalId)) {
-                        throw new DuplicateDoctorException("Doctor already exists with this ID. ");
-                    }else {
-                        Doctor doctor = new Doctor(nationalId, fullname, Branch.values()[branchNum-1]);
-                        doctorRepository.add(doctor);
-                    }
-                } else {
-                    System.out.println("The branch is invalid!! ");
-                }
-            } else {
-                System.out.println("Full name is invalid");
-            }
-
-        } else {
-            System.out.println("It is invalid id!");
+        if(!isValidNationalId(nationalId)) {
+            throw new InvalidNationalIdException("It is invalid id!");
         }
+
+        if(!isValidFullname(fullname)) {
+            System.out.println("Full name is invalid");
+            return;
+        }
+
+        if(!isValidBranch(branchNum)) {
+            System.out.println("The branch is invalid!! ");
+            return;
+        }
+
+        if(doctorRepository.existsByNationalId(nationalId)) {
+            throw new DuplicateDoctorException("Doctor already exists with this ID. ");
+        }
+
+        Doctor doctor = new Doctor(nationalId, fullname, Branch.values()[branchNum-1]);
+        doctorRepository.add(doctor);
+
+
     }
 
     public void deleteDoctor(String nationalId){
@@ -40,8 +44,6 @@ public class DoctorService {
             } else {
                 System.out.println("The doctor is not found.");
             }
-        }else {
-            System.out.println("It is invalid id");
         }
     }
 

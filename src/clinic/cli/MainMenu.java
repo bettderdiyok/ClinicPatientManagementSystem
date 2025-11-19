@@ -2,6 +2,7 @@ package clinic.cli;
 
 import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorRepository;
+import clinic.repo.PatientRepository;
 import clinic.service.AppointmentService;
 import clinic.service.DoctorService;
 import clinic.service.PatientService;
@@ -16,8 +17,11 @@ public class MainMenu {
         DoctorRepository doctorRepository = new DoctorRepository();
         DoctorService doctorService = new DoctorService(doctorRepository);
         DoctorMenu doctorMenu = new DoctorMenu(doctorService);
-        PatientService patientService = new PatientService();
+
+        PatientRepository patientRepository = new PatientRepository();
+        PatientService patientService = new PatientService(patientRepository);
         PatientMenu patientMenu = new PatientMenu(patientService);
+
         AppointmentRepository appointmentRepository = new AppointmentRepository();
         AppointmentService appointmentService = new AppointmentService(appointmentRepository);
         AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService);
@@ -36,6 +40,9 @@ public class MainMenu {
                     doctorMenu.showTheDoctorMenu();
                     break;
                 case 3:
+                    appointmentMenu.showTheAppointmentMenu();
+                    break;
+                case 4:
 
                     break;
                 case 5:

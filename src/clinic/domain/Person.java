@@ -3,7 +3,7 @@ public abstract class Person {
     private String nationalID;
     private String fullName;
 
-    public Person(String nationalID, String fullName) {
+    public Person(String fullName, String nationalID) {
         this.nationalID = nationalID;
         this.fullName = fullName;
 

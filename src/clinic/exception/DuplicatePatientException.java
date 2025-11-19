@@ -1,4 +1,7 @@
 package clinic.exception;
 
-public class DuplicatePatientException {
+public class DuplicatePatientException extends RuntimeException {
+    public DuplicatePatientException(String message) {
+        super(message);
+    }
 }
