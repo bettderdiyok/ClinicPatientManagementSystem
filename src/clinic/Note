@@ -1,3 +1,5 @@
+Layered Architecture:
+
 - clinic.domain -
 The classes that represent concepts of the real world.
 

@@ -1,6 +1,7 @@
 package clinic.repo;
 
 
+import clinic.domain.Doctor;
 import clinic.domain.Patient;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -11,6 +12,15 @@ public class PatientRepository {
     public boolean existsByNationalId(String nationalId) {
         for (Patient patient : patients) {
             if (patient.getNationalID().equalsIgnoreCase(nationalId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean existsBySystemId(int patientId) {
+        for (Patient patient : patients) {
+            if((patient.getPatientId() == patientId)) {
                 return true;
             }
         }

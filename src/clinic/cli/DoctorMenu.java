@@ -1,9 +1,14 @@
 package clinic.cli;
 
 import clinic.domain.Branch;
+import clinic.domain.DayOffType;
+import clinic.domain.DoctorDayOff;
+import clinic.exception.DoctorNotFoundException;
 import clinic.exception.DuplicateDoctorException;
+import clinic.exception.InvalidNationalIdException;
 import clinic.service.DoctorService;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class DoctorMenu {
@@ -41,12 +46,19 @@ public class DoctorMenu {
                     } catch(DuplicateDoctorException e) {
                         System.out.println(e.getMessage());
                         System.out.println("Returning to menu...");
-                }
+                } catch (InvalidNationalIdException e){
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 2:
                     System.out.print("Enter national ID: ");
                     String nationalId = input.next();
-                    doctorService.deleteDoctor(nationalId);
+                    try {
+                        doctorService.deleteDoctor(nationalId);
+                        System.out.println("Doctor deleted successfully.");
+                    } catch (InvalidNationalIdException | DoctorNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 3:
                     System.out.print("Enter national ID: ");
@@ -72,7 +84,38 @@ public class DoctorMenu {
                     break;
                 case 6:
                     isTrue = false;
-                    break;
+                case 7:
+                    System.out.println("---DOCTOR LIST---");
+                    doctorService.listDoctors();
+                    System.out.print("Enter Doctor id: ");
+                    int doctorId= input.nextInt();
+
+                    if(!doctorService.existsBySystemId(doctorId)){
+                        System.out.println("Doctor not found!");
+                        break;
+                    }
+
+                    System.out.print("Enter day off date (YYYY-MM-DD): ");
+                    String strDate = input.next();
+                    LocalDate date;
+
+                    try {
+                        date = LocalDate.parse(strDate);
+                    } catch (Exception e) {
+                        System.out.println("Invalid date format. Example : 2025-11-13");
+                        break;
+                    }
+
+                    listDayOffType();
+                    System.out.println("Enter day off type : ");
+                    int choiceType = input.nextInt();
+                    DayOffType[] dayOffType = DayOffType.values();
+                    DayOffType selectedType = dayOffType[choiceType-1];
+
+                    System.out.println("Enter a note : ");
+                    String note = input.nextLine();
+
+                    DoctorDayOff dayOff = new DoctorDayOff(doctorId, date, selectedType, note);
             }
         }
     }
@@ -83,8 +126,16 @@ public class DoctorMenu {
                 "3-Update Doctor\n" +
                 "4-List Doctors\n" +
                 "5-Menu Again\n" +
-                "6-Back to Main Menu\n"
+                "6-Back to Main Menu\n" +
+                "7-Add Doctor Day Off\n"
         );
+    }
+
+    public static void listDayOffType(){
+        DayOffType[] types = DayOffType.values();
+        for (int i=0; i<types.length; i++) {
+            System.out.println((i+1) + ")" + types[i]);
+        }
     }
 
     public void listBranch(){

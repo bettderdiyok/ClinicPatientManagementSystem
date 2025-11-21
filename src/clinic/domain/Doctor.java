@@ -1,12 +1,15 @@
 package clinic.domain;
 
+import clinic.util.IdGenerator;
+
 public class Doctor extends Person {
     private  Branch branch;
-    private int id;
+    private int doctorId;
 
     public Doctor(String nationalID, String fullName, Branch branch) {
         super(nationalID, fullName);
         this.branch = branch;
+        this.doctorId = IdGenerator.nextDoctorID();
     }
 
 
@@ -18,6 +21,8 @@ public class Doctor extends Person {
         this.branch = branch;
     }
 
-
+    public int getDoctorId() {
+        return doctorId;
+    }
 }
 

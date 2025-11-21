@@ -1,7 +1,9 @@
 package clinic.domain;
 
+import clinic.util.IdGenerator;
+
 public class Patient extends Person{
-    private int id;
+    private int patientId;
     private int age;
     private String complaint;
 
@@ -9,6 +11,7 @@ public class Patient extends Person{
         super(fullName, nationalID);
         this.age = age;
         this.complaint = complaint;
+        this.patientId = IdGenerator.nextPatientID();
     }
 
     public String getComplaint() {
@@ -25,5 +28,9 @@ public class Patient extends Person{
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public int getPatientId() {
+        return patientId;
     }
 }

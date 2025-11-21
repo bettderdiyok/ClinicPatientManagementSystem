@@ -1,17 +1,21 @@
 package clinic.service;
 import clinic.domain.Branch;
 import clinic.domain.Doctor;
+import clinic.exception.DoctorNotFoundException;
 import clinic.exception.DuplicateDoctorException;
 import clinic.exception.InvalidNationalIdException;
 import clinic.repo.DoctorRepository;
 
 public class DoctorService {
     private final DoctorRepository doctorRepository;
-    //DI (Dependency Injection - Constructor Injection)
+    //DI (Dependency Injection - Constructor Dependency Injection)
     public DoctorService(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
 
+    public boolean existsBySystemId(int doctorID){
+        return this.doctorRepository.existsBySystemId(doctorID); //Delegation
+    }
     public void addDoctor(String nationalId, String fullname, int branchNum){
         if(!isValidNationalId(nationalId)) {
             throw new InvalidNationalIdException("It is invalid id!");
@@ -38,23 +42,23 @@ public class DoctorService {
     }
 
     public void deleteDoctor(String nationalId){
-        if(isValidNationalId(nationalId)) {
-            if(doctorRepository.existsByNationalId(nationalId)){
-                doctorRepository.delete(nationalId);
-            } else {
-                System.out.println("The doctor is not found.");
-            }
+        if (isValidNationalId(nationalId)) {
+            throw new InvalidNationalIdException("Invalid national ID");
         }
-    }
+
+        if(!doctorRepository.existsByNationalId(nationalId)){
+            throw new DoctorNotFoundException("No doctor found with th,s national ID.");
+        }
+
+        doctorRepository.delete(nationalId);
+        }
 
     public void updateDoctor(String id, String name, int branch){
         doctorRepository.updateDoctor(id, name, branch);
-
-
     }
+
     public void listDoctors(){
         doctorRepository.listDoctors();
-
     }
 
     public boolean isValidNationalId(String nationalId) {

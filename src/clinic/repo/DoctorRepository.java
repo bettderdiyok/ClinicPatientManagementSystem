@@ -19,6 +19,14 @@ public class DoctorRepository {
         return false;
     }
 
+    public boolean existsBySystemId(int doctorId) {
+        for (Doctor doctor : doctorArrayList) {
+            if((doctor.getDoctorId() == doctorId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void add(Doctor doctor){
         doctorArrayList.add(doctor);
@@ -56,7 +64,9 @@ public class DoctorRepository {
         ListIterator<Doctor> iterator = doctorArrayList.listIterator();
         while(iterator.hasNext()){
             Doctor forward =  iterator.next();
-            System.out.println((iterator.nextIndex()) +  ") " + "Fullname : " + forward.getFullName() + " Branch : " + Branch.values()[iterator.nextIndex()]);
+            System.out.println(iterator.next().getDoctorId() +  ") " + "Fullname : " +
+                    forward.getFullName() + " Branch : " +
+                    Branch.values()[iterator.nextIndex()]);
         }
     }
 

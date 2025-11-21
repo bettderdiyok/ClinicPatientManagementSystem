@@ -1,6 +1,7 @@
 package clinic.cli;
 
 import clinic.repo.AppointmentRepository;
+import clinic.repo.DoctorDayOffRepository;
 import clinic.repo.DoctorRepository;
 import clinic.repo.PatientRepository;
 import clinic.service.AppointmentService;
@@ -22,9 +23,11 @@ public class MainMenu {
         PatientService patientService = new PatientService(patientRepository);
         PatientMenu patientMenu = new PatientMenu(patientService);
 
+        DoctorDayOffRepository doctorDayOffRepository = new DoctorDayOffRepository();
+
         AppointmentRepository appointmentRepository = new AppointmentRepository();
-        AppointmentService appointmentService = new AppointmentService(appointmentRepository);
-        AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService);
+        AppointmentService appointmentService = new AppointmentService(appointmentRepository, doctorRepository, patientRepository, doctorDayOffRepository);
+        AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService, doctorService, patientService);
 
         System.out.println("Welcome to the Clinic Patient Management System");
         while(isTrue){
@@ -50,6 +53,7 @@ public class MainMenu {
                     break;
                 case 0:
                     isTrue = false;
+                    break;
             }
         }
     }
