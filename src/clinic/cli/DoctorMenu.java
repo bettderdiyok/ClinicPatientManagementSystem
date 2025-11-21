@@ -8,6 +8,7 @@ import clinic.exception.DuplicateDoctorException;
 import clinic.exception.InvalidNationalIdException;
 import clinic.service.DoctorService;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -84,6 +85,7 @@ public class DoctorMenu {
                     break;
                 case 6:
                     isTrue = false;
+                    break;
                 case 7:
                     System.out.println("---DOCTOR LIST---");
                     doctorService.listDoctors();
@@ -106,9 +108,16 @@ public class DoctorMenu {
                         break;
                     }
 
+                    DayOfWeek day = date.getDayOfWeek();
+                    if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+                        System.out.println("Doctor already does not work on weekends. Please choose a weekday (Monday–Friday).");
+                        break;
+                    }
+
                     listDayOffType();
                     System.out.println("Enter day off type : ");
                     int choiceType = input.nextInt();
+                    input.nextLine();
                     DayOffType[] dayOffType = DayOffType.values();
                     DayOffType selectedType = dayOffType[choiceType-1];
 

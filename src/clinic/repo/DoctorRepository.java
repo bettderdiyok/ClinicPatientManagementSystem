@@ -61,19 +61,14 @@ public class DoctorRepository {
     }
 
     public void listDoctors(){
-        ListIterator<Doctor> iterator = doctorArrayList.listIterator();
-        while(iterator.hasNext()){
-            Doctor forward =  iterator.next();
-            System.out.println(iterator.next().getDoctorId() +  ") " + "Fullname : " +
-                    forward.getFullName() + " Branch : " +
-                    Branch.values()[iterator.nextIndex()]);
+        for (Doctor doctor : doctorArrayList) {
+            System.out.println(
+                    "id : " + doctor.getDoctorId() +
+                            " Fullname : " + doctor.getFullName() +
+                            " Branch : " + doctor.getBranch()
+            );
         }
     }
-
-
-
-
-
 }
 
 

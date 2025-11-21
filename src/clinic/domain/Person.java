@@ -1,20 +1,15 @@
 package clinic.domain;
 public abstract class Person {
-    private String nationalID;
     private String fullName;
+    private final String nationalID;
 
     public Person(String fullName, String nationalID) {
-        this.nationalID = nationalID;
         this.fullName = fullName;
-
+        this.nationalID = nationalID;
     }
 
     public String getNationalID() {
         return nationalID;
-    }
-
-    public void setNationalID(String nationalID) {
-        this.nationalID = nationalID;
     }
 
     public String getFullName() {

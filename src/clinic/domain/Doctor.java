@@ -6,11 +6,12 @@ public class Doctor extends Person {
     private  Branch branch;
     private int doctorId;
 
-    public Doctor(String nationalID, String fullName, Branch branch) {
+    public Doctor(String fullName, String nationalID, Branch branch) {
         super(nationalID, fullName);
         this.branch = branch;
         this.doctorId = IdGenerator.nextDoctorID();
     }
+
 
 
     public Branch getBranch() {
@@ -24,5 +25,6 @@ public class Doctor extends Person {
     public int getDoctorId() {
         return doctorId;
     }
+
 }
 
