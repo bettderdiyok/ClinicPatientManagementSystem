@@ -14,10 +14,10 @@ import java.util.Scanner;
 public class AppointmentMenu {
     Scanner input = new Scanner(System.in);
     private final AppointmentService appointmentService;
-    private  final DoctorService doctorService;
+    private final DoctorService doctorService;
     private final PatientService patientService;
 
-    public AppointmentMenu(AppointmentService appointmentService, DoctorService doctorService,  PatientService patientService) {
+    public AppointmentMenu(AppointmentService appointmentService, DoctorService doctorService, PatientService patientService) {
         this.appointmentService = appointmentService;
         this.doctorService = doctorService;
         this.patientService = patientService;
@@ -48,21 +48,20 @@ public class AppointmentMenu {
                         int patientID = input.nextInt();
 
                         System.out.println("Enter Appointment date and time : ");
-                        System.out.print("Year (e.g. 2025) : ");
-                        int year = input.nextInt();
+                        System.out.print("Date : (YYYY-MM-DD)");
+                        String strDate = input.next();
+                        LocalDate date = LocalDate.parse(strDate);
 
-                        System.out.print("Month (1-12) : ");
-                        int month = input.nextInt();
-
-                        System.out.print("Day : ");
-                        int day = input.nextInt();
-
-                        System.out.print("Hour (0-23): ");
+                        System.out.print("Hour (09-17): ");
                         int hour = input.nextInt();
+                        input.nextLine();
 
+                        System.out.print("Minute :  (00-15-30-45):");
                         int minute = input.nextInt();
                         input.nextLine();
-                        LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
+
+                        LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour, minute);
+                        //getMonth ->ENUM getMonthValue()-> int
                         appointmentService.createAppointment(doctorID, patientID, time);
                         System.out.println("Appointment created successfully!");
                     } catch (DoctorNotFoundException | PatientNotFoundException |
@@ -70,26 +69,27 @@ public class AppointmentMenu {
                         System.out.println(e.getMessage());
                     }
                     break;
-                        case 2:
+                case 2:
 
 
-                            break;
-                        case 3:
+                    break;
+                case 3:
 
 
-                            break;
-                        case 4:
-
-                            break;
-                        case 5:
-                            showTheMenu();
-                            break;
-                        case 6:
-                            isTrue = false;
-                    }
+                    break;
+                case 4:
+                    listAppointmentMenu();
+                    break;
+                case 5:
+                    showTheMenu();
+                    break;
+                case 6:
+                    isTrue = false;
             }
         }
-    public static void showTheMenu(){
+    }
+
+    public static void showTheMenu() {
         System.out.println("1-Create Appointment\n" +
                 "2-Cancel Appointment \n" +
                 "3-Update Appointment\n" +
@@ -97,6 +97,42 @@ public class AppointmentMenu {
                 "5-Menu Again\n" +
                 "6-Back to Main Menu\n"
         );
+    }
+
+    public void listAppointmentMenu() {
+        System.out.println("----- LIST APPOINTMENTS -----");
+        System.out.println("1 - List all appointments");
+        System.out.println("2 - List appointments by doctor");
+        System.out.println("3 - List appointments by patient");
+        System.out.print("Your choice: ");
+
+        int listChoice = input.nextInt();
+        input.nextLine();
+
+        switch (listChoice) {
+            case 1:
+                //appointmentService.listAllAppointments();
+                break;
+            case 2:
+                listAppointmentsByDoctor();
+                break;
+            case 3:
+                //listAppointmentsByPatient();
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+    private void listAppointmentsByDoctor() {
+        System.out.println("----- DOCTOR LIST -----");
+        doctorService.listDoctors();
+        System.out.print("Enter Doctor ID: ");
+        int doctorId = input.nextInt();
+        input.nextLine();
+
+       // appointmentService.listAppointmentsByDoctorId(doctorId);
+
     }
 }
 

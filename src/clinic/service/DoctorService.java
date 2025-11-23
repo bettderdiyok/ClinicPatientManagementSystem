@@ -1,64 +1,122 @@
 package clinic.service;
 import clinic.domain.Branch;
 import clinic.domain.Doctor;
+import clinic.domain.DoctorDayOff;
+import clinic.dto.UpdateDoctorRequest;
 import clinic.exception.DoctorNotFoundException;
 import clinic.exception.DuplicateDoctorException;
+import clinic.exception.InvalidDayOffException;
 import clinic.exception.InvalidNationalIdException;
+import clinic.repo.AppointmentRepository;
+import clinic.repo.DoctorDayOffRepository;
 import clinic.repo.DoctorRepository;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.List;
 
 public class DoctorService {
     private final DoctorRepository doctorRepository;
+    private final DoctorDayOffRepository doctorDayOffRepository;
+    private final AppointmentRepository appointmentRepository;
+
     //DI (Dependency Injection - Constructor Dependency Injection)
-    public DoctorService(DoctorRepository doctorRepository) {
+    public DoctorService(DoctorRepository doctorRepository, DoctorDayOffRepository doctorDayOffRepository, AppointmentRepository appointmentRepository) {
         this.doctorRepository = doctorRepository;
+        this.doctorDayOffRepository = doctorDayOffRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
-    public boolean existsBySystemId(int doctorID){
+    public boolean existsBySystemId(int doctorID) {
         return this.doctorRepository.existsBySystemId(doctorID); //Delegation
     }
-    public void addDoctor(String nationalId, String fullname, int branchNum){
-        if(!isValidNationalId(nationalId)) {
+
+    public void addDoctor(String nationalId, String fullname, int branchNum) {
+        if (!isValidNationalId(nationalId)) {
             throw new InvalidNationalIdException("It is invalid id!");
         }
 
-        if(!isValidFullname(fullname)) {
+        if (!isValidFullname(fullname)) {
             System.out.println("Full name is invalid");
             return;
         }
 
-        if(!isValidBranch(branchNum)) {
+        if (!isValidBranch(branchNum)) {
             System.out.println("The branch is invalid!! ");
             return;
         }
 
-        if(doctorRepository.existsByNationalId(nationalId)) {
+        if (doctorRepository.existsByNationalId(nationalId)) {
             throw new DuplicateDoctorException("Doctor already exists with this ID. ");
         }
 
-        Doctor doctor = new Doctor(nationalId, fullname, Branch.values()[branchNum-1]);
+        Doctor doctor = new Doctor(nationalId, fullname, Branch.values()[branchNum - 1]);
         doctorRepository.add(doctor);
+    }
 
+    public void deleteDoctor(int doctorId) {
+        if (!existsBySystemId(doctorId)) {
+            throw new InvalidNationalIdException("Invalid ID");
+        }
+        if (appointmentRepository.existsAppointmentByDoctorId(doctorId)) {
+            System.out.println("You can't delete this doctor because he has at least appointment.");
+        }
+        doctorRepository.delete(doctorId);
+    }
+
+    public void updateDoctor(int id, UpdateDoctorRequest request) {
+        Doctor doctor = doctorRepository.findByDoctorId(id);
+        if(request.getFullname() != null){
+            doctor.setFullName(request.getFullname());
+        }
+
+        if(request.getBranch() != null){
+            doctor.setBranch(request.getBranch());
+        }
+
+        System.out.println("The doctor updated!");
 
     }
 
-    public void deleteDoctor(String nationalId){
-        if (isValidNationalId(nationalId)) {
-            throw new InvalidNationalIdException("Invalid national ID");
+    public void addDayOff(DoctorDayOff dayOff) {
+        if (!doctorRepository.existsBySystemId(dayOff.getDoctorId())) {
+            throw new DoctorNotFoundException("Doctor not found!");
         }
 
-        if(!doctorRepository.existsByNationalId(nationalId)){
-            throw new DoctorNotFoundException("No doctor found with th,s national ID.");
+        if (dayOff.getDateTime().isBefore(LocalDate.now())) {
+            throw new InvalidDayOffException("You cannot enter a past date as a day off.");
         }
 
-        doctorRepository.delete(nationalId);
+        if (dayOff.getDateTime().getDayOfWeek() == DayOfWeek.SATURDAY || dayOff.getDateTime().getDayOfWeek() == DayOfWeek.SUNDAY) {
+           throw  new InvalidDayOffException("Doctor does not work on weekends.");
         }
 
-    public void updateDoctor(String id, String name, int branch){
-        doctorRepository.updateDoctor(id, name, branch);
+        if (doctorDayOffRepository.isDoctorOffOnDate(dayOff.getDoctorId(), dayOff.getDateTime())) {
+           throw new InvalidDayOffException("Doctor already has a day off on this date.");
+        }
     }
 
-    public void listDoctors(){
+    public void listDoctors() {
+        if(doctorRepository.getDoctorArrayList().isEmpty()){
+            System.out.println("There is no doctor!");
+            return;
+        }
         doctorRepository.listDoctors();
+    }
+
+    public void listDayOff(int doctorId){
+        if(!doctorRepository.existsBySystemId(doctorId)) {
+            throw new DoctorNotFoundException("Doctor Not Found!");
+        }
+        List<DoctorDayOff> offs = doctorDayOffRepository.findByDoctorId(doctorId);
+
+        if(offs.isEmpty()) {
+            System.out.println("This doctor has no day off.");
+            return;
+        }
+
+       offs.forEach(off ->
+               System.out.println(off.getDateTime() + " - " + off.getDayOffType() + " - " + off.getNote()));
     }
 
     public boolean isValidNationalId(String nationalId) {
@@ -66,23 +124,30 @@ public class DoctorService {
 
     }
 
-    public boolean isValidFullname(String fullname){
+    public boolean isValidFullname(String fullname) {
         return fullname != null && fullname.matches("^[A-Za-zÇçĞğİıÖöŞşÜü\\s]+$");
 
     }
 
-    public boolean isValidBranch(int branchNum){
-        Branch selectedBranch = Branch.values()[branchNum-1];
-       if(selectedBranch == null || selectedBranch.toString().trim().isEmpty()){
-           return false;
-       }
+    public boolean isValidBranch(int branchNum) {
+        Branch selectedBranch = Branch.values()[branchNum - 1];
+        if (selectedBranch == null || selectedBranch.toString().trim().isEmpty()) {
+            return false;
+        }
         try {
-             Branch.valueOf(selectedBranch.toString().trim().toUpperCase());
-             return true;
+            Branch.valueOf(selectedBranch.toString().trim().toUpperCase());
+            return true;
 
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
 
+    public Doctor findByDoctorId(int id){
+        return doctorRepository.findByDoctorId(id);
+    }
 }
+
+
+
+

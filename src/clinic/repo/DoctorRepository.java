@@ -2,13 +2,18 @@ package clinic.repo;
 
 import clinic.domain.Branch;
 import clinic.domain.Doctor;
+import clinic.dto.UpdateDoctorRequest;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 
 public class DoctorRepository {
     private final ArrayList<Doctor> doctorArrayList = new ArrayList<>();
+
+    public ArrayList<Doctor> getDoctorArrayList() {
+        return doctorArrayList;
+    }
 
     public boolean existsByNationalId(String nationalId) {
         for (Doctor doctor : doctorArrayList) {
@@ -32,32 +37,15 @@ public class DoctorRepository {
         doctorArrayList.add(doctor);
     }
 
-    public void delete(String nationalId) {
-        Iterator<Doctor> iterator = doctorArrayList.iterator();
+    public void delete(int id) {
+        ListIterator<Doctor> iterator = doctorArrayList.listIterator();
          while(iterator.hasNext()) {
              Doctor doctor = iterator.next();
-             if(doctor.getNationalID().equals(nationalId)) {
+             if(doctor.getDoctorId() == id) {
                  iterator.remove();
-                 System.out.println("Doctor deleted.");
-                 return;
+                 break;
              }
          }
-
-    }
-
-    public void updateDoctor(String id, String newFullName, int newBranch){
-        ListIterator<Doctor> iterator = doctorArrayList.listIterator();
-        while (iterator.hasNext()) {
-            Doctor current = iterator.next();
-            if(current.getNationalID().equalsIgnoreCase(id)){
-                Doctor updatedDoctor = new Doctor(current.getNationalID(),
-                        newFullName,
-                        Branch.values()[newBranch]);
-                iterator.set(updatedDoctor);
-                System.out.println("The doctor updated!");
-                return;
-            }
-        }
     }
 
     public void listDoctors(){
@@ -68,6 +56,13 @@ public class DoctorRepository {
                             " Branch : " + doctor.getBranch()
             );
         }
+    }
+
+    public  Doctor findByDoctorId(int doctorId){
+        return doctorArrayList.stream()
+                .filter(doctor -> doctor.getDoctorId() == doctorId)
+                .findFirst()
+                .orElse(null);
     }
 }
 

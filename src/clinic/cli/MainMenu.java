@@ -16,16 +16,16 @@ public class MainMenu {
         boolean isTrue = true;
         int choice;
         DoctorRepository doctorRepository = new DoctorRepository();
-        DoctorService doctorService = new DoctorService(doctorRepository);
+        DoctorDayOffRepository doctorDayOffRepository = new DoctorDayOffRepository();
+        AppointmentRepository appointmentRepository = new AppointmentRepository();
+        DoctorService doctorService = new DoctorService(doctorRepository, doctorDayOffRepository, appointmentRepository );
+
         DoctorMenu doctorMenu = new DoctorMenu(doctorService);
 
         PatientRepository patientRepository = new PatientRepository();
         PatientService patientService = new PatientService(patientRepository);
         PatientMenu patientMenu = new PatientMenu(patientService);
 
-        DoctorDayOffRepository doctorDayOffRepository = new DoctorDayOffRepository();
-
-        AppointmentRepository appointmentRepository = new AppointmentRepository();
         AppointmentService appointmentService = new AppointmentService(appointmentRepository, doctorRepository, patientRepository, doctorDayOffRepository);
         AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService, doctorService, patientService);
 
@@ -46,7 +46,6 @@ public class MainMenu {
                     appointmentMenu.showTheAppointmentMenu();
                     break;
                 case 4:
-
                     break;
                 case 5:
                     showTheMenu();

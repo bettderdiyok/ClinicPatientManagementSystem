@@ -42,8 +42,8 @@ public class PatientService {
         System.out.println("Patient added successfully!");
     }
 
-    public void deletePatient(String nationalId){
-       patientRepository.deletePatient(nationalId);
+    public void deletePatient(int patientId){
+        patientRepository.deletePatient(patientId);
         System.out.println("Patient deleted successfully!");
 
 
@@ -54,8 +54,8 @@ public class PatientService {
 
     }
 
-    public void updatePatient(String nationalId, UpdatePatientRequest request) {
-        Patient patient = patientRepository.findPatient(nationalId);
+    public void updatePatient(int patientId, UpdatePatientRequest request) {
+        Patient patient = patientRepository.findPatient(patientId);
         if (request.getFullname() != null) {
             patient.setFullName(request.getFullname());
         }
@@ -67,8 +67,6 @@ public class PatientService {
         if (request.getComplaint() != null) {
             patient.setComplaint(request.getComplaint());
         }
-
-
     }
 
     public void searchPatient(){

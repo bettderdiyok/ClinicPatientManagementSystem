@@ -1,23 +1,34 @@
 package clinic.repo;
 
-import clinic.domain.DayOffType;
 import clinic.domain.DoctorDayOff;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DoctorDayOffRepository {
-    private ArrayList<DoctorDayOff> dayOffs = new ArrayList<>();
+    private final ArrayList<DoctorDayOff> dayOffs = new ArrayList<>();
 
-    public void addDayOff(int doctorId, LocalDate time, DayOffType type, String note) {
-        DoctorDayOff dayOff = new DoctorDayOff(doctorId, time, type, note);
+    public void addDayOff(DoctorDayOff dayOff) {
         dayOffs.add(dayOff);
     }
 
     public boolean isDoctorOffOnDate(int doctorId, LocalDate time) {
-        return dayOffs.stream().anyMatch(doctorDayOff -> doctorDayOff.getDoctorId() == doctorId &&
-                doctorDayOff.getDateTime().equals(time));
+        return dayOffs.stream().anyMatch(off ->
+                off.getDoctorId() == doctorId &&
+                off.getDateTime().isEqual(time));
+    }
+
+
+    public List<DoctorDayOff> findByDoctorId(int doctorId){
+        List<DoctorDayOff> result = new ArrayList<>();
+        for (DoctorDayOff dayOff : dayOffs) {
+            if(dayOff.getDoctorId() == doctorId) {
+                result.add(dayOff);
+            }
+
+        }
+        return result;
+
     }
 }
 

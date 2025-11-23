@@ -32,12 +32,12 @@ public class PatientRepository {
         patients.add(newPatient);
     }
 
-    public void deletePatient(String nationalId) {
+    public void deletePatient(int patientId) {
         ListIterator<Patient> iterator = patients.listIterator();
         while (iterator.hasNext()) {
             Patient currentPatient = iterator.next();
-            if (currentPatient.getNationalID().equalsIgnoreCase(nationalId)) {
-                patients.remove(currentPatient);
+            if (currentPatient.getPatientId() == patientId) {
+                iterator.remove();
                 break;
             }
         }
@@ -49,16 +49,20 @@ public class PatientRepository {
             System.out.println("There are no patients");
         } else {
             for (Patient patient : patients) {
-                System.out.println("Fullname : " + patient.getFullName() + " NationalId : " + patient.getNationalID() + " Age : " + patient.getAge() + " Complaint : " + patient.getComplaint());
+                System.out.println("id : " + patient.getPatientId() +
+                        " Fullname : " + patient.getFullName() + " " +
+                        " NationalId : " + patient.getNationalID() +
+                        " Age : " + patient.getAge() +
+                        " Complaint : " + patient.getComplaint());
             }
         }
     }
 
-    public Patient findPatient(String nationalID) {
+    public Patient findPatient(int patientId) {
         ListIterator<Patient> iterator = patients.listIterator();
         while (iterator.hasNext()) {
             Patient currentPatient = iterator.next();
-            if (currentPatient.getNationalID().equalsIgnoreCase(nationalID)) {
+            if (currentPatient.getPatientId() == patientId) {
                 return currentPatient;
             }
         }

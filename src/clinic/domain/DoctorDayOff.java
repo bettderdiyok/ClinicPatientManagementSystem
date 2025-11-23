@@ -1,6 +1,7 @@
 package clinic.domain;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 
 public class DoctorDayOff {
@@ -31,4 +32,6 @@ public class DoctorDayOff {
     public String getNote() {
         return note;
     }
+
+
 }

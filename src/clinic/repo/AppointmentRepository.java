@@ -14,16 +14,24 @@ public class AppointmentRepository {
                         appointment.getDoctorId() == doctorId &&
                                 appointment.getTime().equals(time)
                 );
+
+
        /* for (Appointment appointment : appointments){
             if (appointment.getDoctorId() == doctorId && appointment.getTime().equals(time)) {
                 return true;
             }
-
         }
         return false;
-
         */
     }
+
+    public boolean existsAppointmentByDoctorId(int doctorId){
+       return  appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId);
+    }
+
+
+
+
 
     public boolean existsPatientAndDateTime(int patientId, LocalDateTime time){
         return appointments.stream().anyMatch(appointment -> appointment.getPatientId() == patientId && appointment.getTime().equals(time));
@@ -43,7 +51,8 @@ public class AppointmentRepository {
 
 
 
-    public ArrayList<Appointment> getAppointments() {
-        return appointments;
-    }
+
+
+
+
 }

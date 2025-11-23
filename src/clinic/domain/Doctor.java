@@ -12,19 +12,16 @@ public class Doctor extends Person {
         this.doctorId = IdGenerator.nextDoctorID();
     }
 
-
-
     public Branch getBranch() {
         return branch;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
     }
 
     public int getDoctorId() {
         return doctorId;
     }
 
+    public void setBranch(Branch branch) {
+        this.branch = branch;
+    }
 }
 

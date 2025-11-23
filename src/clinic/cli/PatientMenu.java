@@ -58,17 +58,20 @@ public class PatientMenu {
 
                     break;
                 case 2:
-                    System.out.print("Enter national ID: ");
-                    String nationalId = input.nextLine();
-                    patientService.deletePatient(nationalId);
+                    System.out.println("------- PATIENT LIST ------");
+                    patientService.listPatients();
+                    System.out.print("Enter patient ID : ");
+                    int patientId = input.nextInt();
+                    patientService.deletePatient(patientId);
                     break;
                 case 3:
-                    System.out.print("Enter national ID : ");
-                    nationalId = input.nextLine();
+                    System.out.println("------- PATIENT LIST ------");
+                    patientService.listPatients();
+                    System.out.print("Enter patient ID : ");
+                    patientId = input.nextInt();
 
                     System.out.print("New name (Leave it blank if you don’t want to change it.): ");
                     String fullName = input.nextLine();
-
 
                     System.out.print("New age (Leave it blank if you don’t want to change it.): ");
                     String ageInput  = input.nextLine();
@@ -91,7 +94,7 @@ public class PatientMenu {
                         request.setComplaint(complaintInput);
                     }
 
-                    patientService.updatePatient(nationalId, request);
+                    patientService.updatePatient(patientId, request);
                     break;
                 case 4:
                     patientService.listPatients();
