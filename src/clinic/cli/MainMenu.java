@@ -18,16 +18,15 @@ public class MainMenu {
         DoctorRepository doctorRepository = new DoctorRepository();
         DoctorDayOffRepository doctorDayOffRepository = new DoctorDayOffRepository();
         AppointmentRepository appointmentRepository = new AppointmentRepository();
-        DoctorService doctorService = new DoctorService(doctorRepository, doctorDayOffRepository, appointmentRepository );
-
-        DoctorMenu doctorMenu = new DoctorMenu(doctorService);
-
         PatientRepository patientRepository = new PatientRepository();
-        PatientService patientService = new PatientService(patientRepository);
-        PatientMenu patientMenu = new PatientMenu(patientService);
 
+        DoctorService doctorService = new DoctorService(doctorRepository, doctorDayOffRepository, appointmentRepository );
+        PatientService patientService = new PatientService(patientRepository);
         AppointmentService appointmentService = new AppointmentService(appointmentRepository, doctorRepository, patientRepository, doctorDayOffRepository);
+
         AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService, doctorService, patientService);
+        DoctorMenu doctorMenu = new DoctorMenu(doctorService);
+        PatientMenu patientMenu = new PatientMenu(patientService);
 
         System.out.println("Welcome to the Clinic Patient Management System");
         while(isTrue){
@@ -35,6 +34,7 @@ public class MainMenu {
             showTheMenu();
             System.out.print("Choose the process that you want to perform : ");
             choice = input.nextInt();
+            input.nextLine();
             switch (choice) {
                 case 1:
                     patientMenu.showThePatientMenu();
@@ -45,11 +45,6 @@ public class MainMenu {
                 case 3:
                     appointmentMenu.showTheAppointmentMenu();
                     break;
-                case 4:
-                    break;
-                case 5:
-                    showTheMenu();
-                    break;
                 case 0:
                     isTrue = false;
                     break;
@@ -58,12 +53,12 @@ public class MainMenu {
     }
 
     public static void showTheMenu(){
-        System.out.println( "0-Exit\n" +
-                "1-Patient Management\n" +
-                "2-Doctor Management\n" +
-                "3-Appointment\n" +
-                "4-List\n" +
-                "5-Menu Again\n"
+        System.out.println("""
+                0-Exit
+                1-Patient Management
+                2-Doctor Management
+                3-Appointment
+                """
                );
     }
 }

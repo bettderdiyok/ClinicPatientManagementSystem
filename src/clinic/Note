@@ -20,3 +20,4 @@ Custom exception types that may occur in the application are defined here.
 -cli -> Presentation Layer -> User interaction. It only provides request–response handling.
 -service -> Business Rules
 -domain -> It only includes data and basic behaviors.
+

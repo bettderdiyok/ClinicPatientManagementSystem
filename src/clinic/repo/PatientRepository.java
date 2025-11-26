@@ -9,6 +9,10 @@ import java.util.ListIterator;
 public class PatientRepository {
     ArrayList<Patient> patients = new ArrayList<>();
 
+    public ArrayList<Patient> getPatients() {
+        return patients;
+    }
+
     public boolean existsByNationalId(String nationalId) {
         for (Patient patient : patients) {
             if (patient.getNationalID().equalsIgnoreCase(nationalId)) {

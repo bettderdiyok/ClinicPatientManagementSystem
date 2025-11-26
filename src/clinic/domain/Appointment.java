@@ -5,10 +5,10 @@ import clinic.util.IdGenerator;
 import java.time.LocalDateTime;
 
 public class Appointment {
-    private int appointmentId;
-    private int doctorId;
-    private int patientId;
-    private LocalDateTime time;
+    private final int appointmentId;
+    private final int doctorId;
+    private final int patientId;
+    private final LocalDateTime time;
 
     private enum appointmentStatus {
         BOOKED,

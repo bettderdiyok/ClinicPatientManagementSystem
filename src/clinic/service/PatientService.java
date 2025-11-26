@@ -2,9 +2,7 @@ package clinic.service;
 
 import clinic.domain.Patient;
 import clinic.dto.UpdatePatientRequest;
-import clinic.exception.GuardianRequiredException;
-import clinic.exception.InvalidComplaintException;
-import clinic.exception.InvalidNationalIdException;
+import clinic.exception.*;
 import clinic.repo.PatientRepository;
 
 public class PatientService {
@@ -16,46 +14,49 @@ public class PatientService {
 
     public void addPatient(String fullname, String nationalID, int age, boolean hasGuardian, String complaint){
         if(!isValidNationalID(nationalID)){
-            throw new InvalidNationalIdException("Invalid national ID: " + nationalID );
+            throw new InvalidNationalIdException("Invalid national ID.");
         }
 
         if(!isValidName(fullname)) {
-            System.out.println("Invalid fullname.");
-            return;
+            throw new InvalidNameException("Invalid fullname.");
         }
 
         if(patientRepository.existsByNationalId(nationalID)) {
-            System.out.println("Patient is aldready added.");
-            return;
+           throw new DuplicatePatientException("Patient already exists.");
         }
 
-        if(!isValidAge(age) && !hasGuardian){
+        if(!isMinorAge(age) && !hasGuardian && !isValidAge(age)){
             throw new GuardianRequiredException("Guardian required for minor!");
         }
 
         if(!isValidComplaint(complaint)){
-            throw new InvalidComplaintException("Complaint cannot be empty!");
-
+            throw new InvalidComplaintException("Invalid complaint.");
         }
-
         patientRepository.addPatient(fullname, nationalID, age, complaint);
-        System.out.println("Patient added successfully!");
     }
 
     public void deletePatient(int patientId){
-        patientRepository.deletePatient(patientId);
-        System.out.println("Patient deleted successfully!");
 
+        if(patientId <= 0){
+            throw new InvalidPatientIdException("Patient ID must be positive.");
+        }
 
+        if(!patientRepository.existsBySystemId(patientId)) {
+            throw new PatientNotFoundException("Patient not found");
+        }
+         patientRepository.deletePatient(patientId);
     }
 
     public void listPatients(){
         patientRepository.listPatient();
-
     }
 
     public void updatePatient(int patientId, UpdatePatientRequest request) {
         Patient patient = patientRepository.findPatient(patientId);
+        if (!patientRepository.existsBySystemId(patientId)) {
+            throw new PatientNotFoundException("Patient not found");
+        }
+
         if (request.getFullname() != null) {
             patient.setFullName(request.getFullname());
         }
@@ -69,10 +70,6 @@ public class PatientService {
         }
     }
 
-    public void searchPatient(){
-
-    }
-
     public boolean isValidNationalID(String nationalId){
         return (nationalId != null && nationalId.matches("\\d{11}"));
     }
@@ -82,15 +79,18 @@ public class PatientService {
     }
 
     public boolean isValidAge(int age){
-        return age >= 18;
+        return age > 0 && age <= 120;
+    }
+    public boolean isMinorAge(int age){
+        return age < 18;
     }
 
     public boolean isValidComplaint(String complaint){
         return complaint != null && !complaint.trim().isEmpty() &&  complaint.matches("^[A-Za-zÇçĞğİıÖöŞşÜü\\s]+$");
     }
-
-
-
+    public boolean isPatientListEmpty(){
+        return patientRepository.getPatients().isEmpty();
+    }
 }
 
 

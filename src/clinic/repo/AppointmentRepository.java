@@ -1,22 +1,21 @@
 package clinic.repo;
 
 import clinic.domain.Appointment;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AppointmentRepository {
     private final ArrayList<Appointment> appointments = new ArrayList<>();
-
-    public boolean existsDoctorAndDataTime(int doctorId, LocalDateTime time){
-
-        return appointments.stream().anyMatch(appointment ->
-                        appointment.getDoctorId() == doctorId &&
-                                appointment.getTime().equals(time)
-                );
+    public boolean existsAppointmentByDoctorId(int doctorId){
+       return  appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId);
+    }
 
 
-       /* for (Appointment appointment : appointments){
+
+    public boolean existsPatientAndDateTime(int patientId, LocalDateTime time){
+        return appointments.stream().anyMatch(appointment -> appointment.getPatientId() == patientId && appointment.getTime().equals(time));
+     /* for (Appointment appointment : appointments){
             if (appointment.getDoctorId() == doctorId && appointment.getTime().equals(time)) {
                 return true;
             }
@@ -24,25 +23,13 @@ public class AppointmentRepository {
         return false;
         */
     }
-
-    public boolean existsAppointmentByDoctorId(int doctorId){
-       return  appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId);
-    }
-
-
-
-
-
-    public boolean existsPatientAndDateTime(int patientId, LocalDateTime time){
-        return appointments.stream().anyMatch(appointment -> appointment.getPatientId() == patientId && appointment.getTime().equals(time));
-
-    }
-    public void addAppointment(){
+    public void addAppointment(Appointment appointment){
+        appointments.add(appointment);
 
     }
 
-    public void cancelAppointment(){
-
+    public void deleteAppointment(int appointmentId){
+        appointments.remove(appointmentId-1);
     }
 
     public void updateAppointment(){
@@ -51,8 +38,28 @@ public class AppointmentRepository {
 
 
 
+    public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
+        return appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId && appointment.getTime().equals(time));
+    }
 
+    public List<Appointment> findAppointmentsByDoctorId(int doctorId){
+        return appointments.stream().filter(appointment -> appointment.getDoctorId() == doctorId).toList();
 
+    }
 
+    public List<Appointment> findAppointmentsByPatientId(int patientId) {
+        return appointments.stream().filter(appointment -> appointment.getPatientId() == patientId).toList();
+    }
 
+    public List<Appointment> allAppointments(){
+        return  new ArrayList<>(appointments); //defensive copy
+    }
+
+    public Appointment findById(int appointmentId) {
+        return appointments.stream()
+                .filter(appointment -> appointment.getAppointmentId() == appointmentId)
+                .findFirst()
+                .orElse(null);
+
+    }
 }

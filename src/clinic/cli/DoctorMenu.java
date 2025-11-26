@@ -16,16 +16,16 @@ import java.util.Scanner;
 public class DoctorMenu {
     Scanner input = new Scanner(System.in);
     private final  DoctorService doctorService;
-
+    //DI - Constructor Injection
     public DoctorMenu(DoctorService doctorService) {
         this.doctorService = doctorService;
     }
 
     public void showTheDoctorMenu() {
         int choice;
-        System.out.println("------MENU-----");
         boolean isTrue = true;
         while (isTrue) {
+            System.out.println("------MENU-----");
             showTheMenu();
             System.out.print("Choose the process that you want to perform : ");
             choice = input.nextInt();
@@ -44,13 +44,13 @@ public class DoctorMenu {
                         System.out.print("Enter branch: ");
                         int branch = input.nextInt();
                         doctorService.addDoctor(nationalId, name, branch);
+                        System.out.println("Doctor added successfully!");
                     } catch(DuplicateDoctorException e) {
                         System.out.println(e.getMessage());
                         System.out.println("Returning to menu...");
                 } catch (InvalidNationalIdException e){
                         System.out.println(e.getMessage());
                     }
-                    System.out.println("Doctor added successfully!");
                     break;
                 case 2:
                     System.out.println("----- DOCTOR LIST ----");
@@ -62,71 +62,70 @@ public class DoctorMenu {
 
                     try {
                         doctorService.deleteDoctor(doctorId);
-                    } catch (DoctorNotFoundException e) {
+                        System.out.println("Doctor deleted successfully.");
+                    } catch (DoctorNotFoundException | DoctorHasAppointmentsException e) {
                         System.out.println(e.getMessage());
                     }
-                    System.out.println("Doctor deleted successfully.");
                     break;
                 case 3:
                     System.out.println("----- DOCTOR LIST ----");
                     doctorService.listDoctors();
+                    try {
+                        System.out.print("Enter Doctor ID: ");
+                        doctorId = input.nextInt();
+                        input.nextLine();
 
-                    System.out.print("Enter Doctor ID: ");
-                    doctorId = input.nextInt();
-                    input.nextLine();
+                        System.out.print("New name (Leave it blank if you don’t want to change it.): ");
+                        String newName = input.nextLine();
 
-                    System.out.print("New name (Leave it blank if you don’t want to change it.): ");
-                    String newName = input.nextLine();
+                        listBranch();
 
-                    listBranch();
+                        System.out.print("New branch (Leave it blank if you don’t want to change it.): ");
+                        String newBranch = input.nextLine();
 
-                    System.out.print("New branch (Leave it blank if you don’t want to change it.): ");
-                    String newBranch = input.nextLine();
+                        UpdateDoctorRequest doctorRequest = new UpdateDoctorRequest();
 
-                    UpdateDoctorRequest doctorRequest = new UpdateDoctorRequest();
+                        if(!newName.isBlank()) {
+                            doctorRequest.setFullname(newName);
+                        }
 
-                    if(!newName.isBlank()) {
-                        doctorRequest.setFullname(newName);
+                        if(!newBranch.isBlank()) {
+                            int branchNum = Integer.parseInt(newBranch);
+                            Branch branch = Branch.values()[branchNum-1];
+                            doctorRequest.setBranch(branch);
+                        }
+                        doctorService.updateDoctor(doctorId, doctorRequest);
+                    } catch (DoctorNotFoundException e) {
+                        System.out.println(e.getMessage());
                     }
-
-                    if(!newBranch.isBlank()) {
-                        int branchNum = Integer.parseInt(newBranch);
-                        Branch branch = Branch.values()[branchNum-1];
-                        doctorRequest.setBranch(branch);
-                    }
-
-                    doctorService.updateDoctor(doctorId, doctorRequest);
                     break;
                 case 4:
                     doctorService.listDoctors();
                     break;
                 case 5:
-                    showTheMenu();
-                    break;
-                case 6:
                     isTrue = false;
                     break;
-                case 7:
+                case 6:
                     System.out.println("---DOCTOR LIST---");
                     doctorService.listDoctors();
+
                     System.out.print("Enter Doctor id: ");
                     doctorId = input.nextInt();
 
                     System.out.print("Enter day off date (YYYY-MM-DD): ");
                     String strDate = input.next();
                     LocalDate date;
-
                     try {
                         date = LocalDate.parse(strDate);
                     } catch (Exception e) {
                         System.out.println("Invalid date format. Example : 2025-11-13");
                         break;
                     }
-
                     listDayOffType();
                     System.out.println("Enter day off type : ");
                     int choiceType = input.nextInt();
                     input.nextLine();
+
                     DayOffType[] dayOffType = DayOffType.values();
                     DayOffType selectedType = dayOffType[choiceType-1];
 
@@ -136,25 +135,28 @@ public class DoctorMenu {
                     try {
                         DoctorDayOff dayOff = new DoctorDayOff(doctorId, date, selectedType, note);
                         doctorService.addDayOff(dayOff);
+                        System.out.println("Doctor's day off has been successfully recorded.");
                     } catch (DoctorNotFoundException | InvalidDayOffException e) {
                         System.out.println(e.getMessage());
                     }
-                    System.out.println("Doctor's day off has been successfully recorded.");
                     break;
-                case 8:
+                case 7:
                     System.out.println("DOCTOR LIST");
                     doctorService.listDoctors();
 
-                    System.out.println("Enter Doctor ID : ");
-                    int selectedDoctorId = input.nextInt();
-
-                    System.out.println("Dr. " + doctorService.findByDoctorId(selectedDoctorId).getFullName() + "'s Day Offs: ");
-                    doctorService.listDayOff(selectedDoctorId);
+                    try {
+                        System.out.println("Enter Doctor ID : ");
+                        int selectedDoctorId = input.nextInt();
+                        input.nextLine();
+                        System.out.println("Dr." + doctorService.findByDoctorId(selectedDoctorId).getFullName() + "'s Day Offs: ");
+                        doctorService.listDayOff(selectedDoctorId);
+                    } catch (DoctorNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 default:
                     System.out.println("Faulty input!!");
                     break;
-
             }
         }
     }
@@ -164,10 +166,9 @@ public class DoctorMenu {
                 "2-Delete Doctor\n" +
                 "3-Update Doctor\n" +
                 "4-List Doctors\n" +
-                "5-Menu Again\n" +
-                "6-Back to Main Menu\n" +
-                "7-Add Doctor Day Off\n" +
-                "8-List Doctor Day Offs"
+                "5-Back to Main Menu\n" +
+                "6-Add Doctor Day Off\n" +
+                "7-List Doctor Day Offs"
         );
     }
 

@@ -1,12 +1,8 @@
 package clinic.repo;
 
-import clinic.domain.Branch;
 import clinic.domain.Doctor;
-import clinic.dto.UpdateDoctorRequest;
-
 import java.util.ArrayList;
 import java.util.ListIterator;
-
 
 public class DoctorRepository {
     private final ArrayList<Doctor> doctorArrayList = new ArrayList<>();
@@ -64,6 +60,8 @@ public class DoctorRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+
 }
 
 
