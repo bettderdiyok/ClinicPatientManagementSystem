@@ -25,7 +25,11 @@ public class PatientService {
            throw new DuplicatePatientException("Patient already exists.");
         }
 
-        if(!isMinorAge(age) && !hasGuardian && !isValidAge(age)){
+        if(isValidAge(age)) {
+            throw new InvalidAgeException("Invalid age.");
+        }
+
+        if(!isMinorAge(age) && !hasGuardian){
             throw new GuardianRequiredException("Guardian required for minor!");
         }
 
@@ -36,13 +40,13 @@ public class PatientService {
     }
 
     public void deletePatient(int patientId){
-
+        Patient patient = patientRepository.findPatient(patientId);
         if(patientId <= 0){
             throw new InvalidPatientIdException("Patient ID must be positive.");
         }
 
-        if(!patientRepository.existsBySystemId(patientId)) {
-            throw new PatientNotFoundException("Patient not found");
+        if(patient == null) {
+            throw new PatientNotFoundException("Patient not found.");
         }
          patientRepository.deletePatient(patientId);
     }
@@ -53,7 +57,7 @@ public class PatientService {
 
     public void updatePatient(int patientId, UpdatePatientRequest request) {
         Patient patient = patientRepository.findPatient(patientId);
-        if (!patientRepository.existsBySystemId(patientId)) {
+        if (patient == null) {
             throw new PatientNotFoundException("Patient not found");
         }
 

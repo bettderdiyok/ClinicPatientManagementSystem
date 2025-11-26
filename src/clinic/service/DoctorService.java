@@ -24,9 +24,6 @@ public class DoctorService {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public boolean existsBySystemId(int doctorID) {
-        return this.doctorRepository.existsBySystemId(doctorID); //Delegation
-    }
 
     public void addDoctor(String nationalId, String fullName, int branchNum) {
         if (!isValidNationalId(nationalId)) {
@@ -50,8 +47,9 @@ public class DoctorService {
     }
 
     public void deleteDoctor(int doctorId) {
-        if (!existsBySystemId(doctorId)) {
-            throw new InvalidNationalIdException("Invalid ID");
+        Doctor doctor = doctorRepository.findByDoctorId(doctorId);
+        if (doctor == null) {
+            throw new InvalidNationalIdException("Doctor not found.");
         }
         if (appointmentRepository.existsAppointmentByDoctorId(doctorId)) {
             throw new DoctorHasAppointmentsException("You can't delete this doctor because he has at least appointment.");
@@ -69,9 +67,6 @@ public class DoctorService {
         if(request.getBranch() != null){
             doctor.setBranch(request.getBranch());
         }
-
-        System.out.println("The doctor updated!");
-
     }
 
     public void addDayOff(DoctorDayOff dayOff) {
@@ -91,42 +86,33 @@ public class DoctorService {
            throw new InvalidDayOffException("Doctor already has a day off on this date.");
         }
         doctorDayOffRepository.addDayOff(dayOff);
-
     }
 
     public void listDoctors() {
         if(doctorRepository.getDoctorArrayList().isEmpty()){
-            System.out.println("There is no doctor!");
-            return;
+           throw new DoctorNotFoundException("No doctors found");
         }
         doctorRepository.listDoctors();
     }
 
-    public void listDayOff(int doctorId){
+    public List<DoctorDayOff> listDayOff(int doctorId){
         if(!doctorRepository.existsBySystemId(doctorId)) {
             throw new DoctorNotFoundException("Doctor Not Found!");
         }
-
-
         List<DoctorDayOff> offs = doctorDayOffRepository.findByDoctorId(doctorId);
 
         if(offs.isEmpty()) {
-            System.out.println("This doctor has no day off.");
-            return;
+            throw new DayOffNotFoundException("This doctor has no day off.");
         }
-
-       offs.forEach(off ->
-               System.out.println(off.getDateTime() + " - " + off.getDayOffType() + " - " + off.getNote()));
+        return offs;
     }
 
     public boolean isValidNationalId(String nationalId) {
         return nationalId != null && nationalId.matches("\\d{11}");
-
     }
 
     public boolean isValidFullname(String fullname) {
         return fullname != null && fullname.matches("^[A-Za-zÇçĞğİıÖöŞşÜü\\s]+$");
-
     }
 
     public boolean isValidBranch(int branchNum) {
@@ -146,8 +132,6 @@ public class DoctorService {
     public Doctor findByDoctorId(int id){
         return doctorRepository.findByDoctorId(id);
     }
-
-
 }
 
 

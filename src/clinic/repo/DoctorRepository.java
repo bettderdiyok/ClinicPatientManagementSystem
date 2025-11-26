@@ -34,14 +34,7 @@ public class DoctorRepository {
     }
 
     public void delete(int id) {
-        ListIterator<Doctor> iterator = doctorArrayList.listIterator();
-         while(iterator.hasNext()) {
-             Doctor doctor = iterator.next();
-             if(doctor.getDoctorId() == id) {
-                 iterator.remove();
-                 break;
-             }
-         }
+       doctorArrayList.removeIf(doctor -> doctor.getDoctorId() == id);
     }
 
     public void listDoctors(){

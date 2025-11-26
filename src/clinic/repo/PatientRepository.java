@@ -37,7 +37,8 @@ public class PatientRepository {
     }
 
     public void deletePatient(int patientId) {
-        ListIterator<Patient> iterator = patients.listIterator();
+      patients.removeIf(patient -> patient.getPatientId() == patientId);
+        /*  ListIterator<Patient> iterator = patients.listIterator();
         while (iterator.hasNext()) {
             Patient currentPatient = iterator.next();
             if (currentPatient.getPatientId() == patientId) {
@@ -45,6 +46,8 @@ public class PatientRepository {
                 break;
             }
         }
+
+       */
 
     }
 
@@ -63,9 +66,7 @@ public class PatientRepository {
     }
 
     public Patient findPatient(int patientId) {
-        ListIterator<Patient> iterator = patients.listIterator();
-        while (iterator.hasNext()) {
-            Patient currentPatient = iterator.next();
+        for (Patient currentPatient : patients) {
             if (currentPatient.getPatientId() == patientId) {
                 return currentPatient;
             }

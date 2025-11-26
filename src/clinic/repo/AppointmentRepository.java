@@ -29,7 +29,7 @@ public class AppointmentRepository {
     }
 
     public void deleteAppointment(int appointmentId){
-        appointments.remove(appointmentId-1);
+       appointments.removeIf(appointment -> appointment.getAppointmentId() == appointmentId);
     }
 
     public void updateAppointment(){
@@ -60,6 +60,5 @@ public class AppointmentRepository {
                 .filter(appointment -> appointment.getAppointmentId() == appointmentId)
                 .findFirst()
                 .orElse(null);
-
     }
 }

@@ -11,6 +11,7 @@ import clinic.service.DoctorService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class DoctorMenu {
@@ -30,6 +31,7 @@ public class DoctorMenu {
             System.out.print("Choose the process that you want to perform : ");
             choice = input.nextInt();
             input.nextLine();
+            int doctorId;
             switch (choice) {
                 case 1:
                     try {
@@ -57,7 +59,7 @@ public class DoctorMenu {
                     doctorService.listDoctors();
 
                     System.out.print("Enter Doctor ID to delete : ");
-                    int doctorId = input.nextInt();
+                    doctorId = input.nextInt();
                     input.nextLine();
 
                     try {
@@ -149,7 +151,9 @@ public class DoctorMenu {
                         int selectedDoctorId = input.nextInt();
                         input.nextLine();
                         System.out.println("Dr." + doctorService.findByDoctorId(selectedDoctorId).getFullName() + "'s Day Offs: ");
-                        doctorService.listDayOff(selectedDoctorId);
+                        List<DoctorDayOff> dayOffs = doctorService.listDayOff(selectedDoctorId);
+                        dayOffs.forEach(dayOff ->
+                            System.out.println(dayOff.getDateTime() + " - " + dayOff.getDayOffType() + " - " + dayOff.getNote()));
                     } catch (DoctorNotFoundException e) {
                         System.out.println(e.getMessage());
                     }
