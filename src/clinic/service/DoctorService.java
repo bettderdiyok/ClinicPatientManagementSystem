@@ -31,11 +31,11 @@ public class DoctorService {
         }
 
         if (!isValidFullname(fullName)) {
-            throw new InvalidNameException("Invalid name.");
+            throw new ValidationException("Invalid name.");
         }
 
         if (!isValidBranch(branchNum)) {
-            throw new InvalidBranchException("Invalid branch number.");
+            throw new ValidationException("Invalid branch number.");
         }
 
         if (doctorRepository.existsByNationalId(nationalId)) {
@@ -49,7 +49,7 @@ public class DoctorService {
     public void deleteDoctor(int doctorId) {
         Doctor doctor = doctorRepository.findByDoctorId(doctorId);
         if (doctor == null) {
-            throw new InvalidNationalIdException("Doctor not found.");
+            throw new DoctorNotFoundException("Doctor not found.");
         }
         if (appointmentRepository.existsAppointmentByDoctorId(doctorId)) {
             throw new DoctorHasAppointmentsException("You can't delete this doctor because he has at least appointment.");
@@ -95,16 +95,11 @@ public class DoctorService {
         doctorRepository.listDoctors();
     }
 
-    public List<DoctorDayOff> listDayOff(int doctorId){
-        if(!doctorRepository.existsBySystemId(doctorId)) {
+    public List<DoctorDayOff> listDayOff(int doctorId) {
+        if (!doctorRepository.existsBySystemId(doctorId)) {
             throw new DoctorNotFoundException("Doctor Not Found!");
         }
-        List<DoctorDayOff> offs = doctorDayOffRepository.findByDoctorId(doctorId);
-
-        if(offs.isEmpty()) {
-            throw new DayOffNotFoundException("This doctor has no day off.");
-        }
-        return offs;
+        return doctorDayOffRepository.findByDoctorId(doctorId);
     }
 
     public boolean isValidNationalId(String nationalId) {

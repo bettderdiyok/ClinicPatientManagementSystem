@@ -35,9 +35,9 @@ public class AppointmentMenu {
             System.out.print("Choose the process that you want to perform : ");
             choice = input.nextInt();
             input.nextLine();
-            switch (choice) {
-                case 1:
-                    try {
+            try {
+                switch (choice) {
+                    case 1:
                         System.out.println("----- DOCTOR LIST -----");
                         doctorService.listDoctors();
 
@@ -46,7 +46,7 @@ public class AppointmentMenu {
 
                         System.out.println("----- PATIENT LIST ------");
                         patientService.listPatients();
-                        if(patientService.isPatientListEmpty()) {
+                        if (patientService.isPatientListEmpty()) {
                             System.out.println("Add a patient first.");
                             break;
                         }
@@ -76,30 +76,20 @@ public class AppointmentMenu {
                         //getMonth ->ENUM getMonthValue()-> int
                         appointmentService.createAppointment(doctorID, patientID, time);
                         System.out.println("Appointment created successfully!");
-                    } catch (DoctorNotFoundException |
-                             PatientNotFoundException |
-                             InvalidAppointmentTimeException |
-                             DoctorAppointmentAlreadyBookedException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case 2:
-                    listAppointmentMenu();
-                    try {
+                        break;
+                    case 2:
+                        listAppointmentMenu();
                         System.out.println("Enter appointment id : ");
                         int appointmentId = input.nextInt();
 
                         appointmentService.deleteAppointment(appointmentId);
                         System.out.println("Appointment deleted.");
-                    } catch (AppointmentNotFoundException | InvalidAppointmentTimeException  e ) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case 3:
-                    listAppointmentMenu();
-                    try {
+                        break;
+                    case 3:
+                        listAppointmentMenu();
+
                         System.out.print("Enter Appointment ID to update: ");
-                        int appointmentId = input.nextInt();
+                        appointmentId = input.nextInt();
                         input.nextLine();
 
                         System.out.println("New doctor ID (Leave it blank if you don’t want to change it.): ");
@@ -116,7 +106,7 @@ public class AppointmentMenu {
 
                         UpdateAppointmentRequest request = new UpdateAppointmentRequest();
 
-                        if(!newId.isBlank()) {
+                        if (!newId.isBlank()) {
                             int newDoctorId = Integer.parseInt(newId);
                             request.setDoctorId(newDoctorId);
                         }
@@ -130,46 +120,41 @@ public class AppointmentMenu {
                                 break;
                             }
 
-                            LocalDate date;
+                            LocalDate dateTime;
                             try {
-                                date = LocalDate.parse(newTime);
+                                dateTime = LocalDate.parse(newTime);
                             } catch (Exception e) {
                                 System.out.println("Invalid date format. Use YYYY-MM-DD.");
                                 break;
                             }
 
-                            int hour = Integer.parseInt(newHour);
-                            int minute = Integer.parseInt(newMinute);
+                            int hours = Integer.parseInt(newHour);
+                            int minutes = Integer.parseInt(newMinute);
 
-                            LocalDateTime time = LocalDateTime.of(
-                                    date.getYear(),
-                                    date.getMonthValue(),
-                                    date.getDayOfMonth(),
-                                    hour,
-                                    minute);
+                            LocalDateTime timeDate = LocalDateTime.of(
+                                    dateTime.getYear(),
+                                    dateTime.getMonthValue(),
+                                    dateTime.getDayOfMonth(),
+                                    hours,
+                                    minutes);
 
-                            request.setTime(time);
+                            request.setTime(timeDate);
                         }
-
                         appointmentService.updateAppointment(appointmentId, request);
                         System.out.println("Appointment updated.");
 
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid date.");
-                    } catch (AppointmentNotFoundException |
-                    DoctorNotFoundException |
-                    InvalidAppointmentTimeException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case 4:
-                    listAppointmentMenu();
-                    break;
-                case 5:
-                    showTheMenu();
-                    break;
-                case 6:
-                    isTrue = false;
+                        break;
+                    case 4:
+                        listAppointmentMenu();
+                        break;
+                    case 5:
+                        showTheMenu();
+                        break;
+                    case 6:
+                        isTrue = false;
+                }
+            } catch (NotFoundException | ValidationException | ArrayIndexOutOfBoundsException | BusinessRuleException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -184,7 +169,7 @@ public class AppointmentMenu {
         );
     }
 
-      private void listAppointmentMenu() {
+    private void listAppointmentMenu() {
         System.out.println("----- LIST APPOINTMENTS -----");
         System.out.println("1 - List all appointments");
         System.out.println("2 - List appointments by doctor");
@@ -212,67 +197,53 @@ public class AppointmentMenu {
     private void listAppointmentsByDoctor() {
         System.out.println("----- DOCTOR LIST -----");
         doctorService.listDoctors();
-        try {
-            System.out.print("Enter Doctor ID: ");
-            int doctorId = input.nextInt();
-            input.nextLine();
+        System.out.print("Enter Doctor ID: ");
+        int doctorId = input.nextInt();
+        input.nextLine();
 
-            Doctor doctor = appointmentService.getDoctor(doctorId);
+        Doctor doctor = appointmentService.getDoctor(doctorId);
 
-            List<Appointment> appointments = appointmentService.listAppointmentsByDoctorId(doctorId);
-            appointments.forEach(appointment -> {
-                Patient patient = appointmentService.getPatient(appointment.getPatientId());
-                System.out.println("Appointment ID : " + appointment.getAppointmentId() +
-                        " Doctor : " + doctor.getFullName() +
-                        " Patient : " + patient.getFullName() +
-                        " Time : " + appointment.getTime());
-            });
-
-        } catch (DoctorNotFoundException | ArrayIndexOutOfBoundsException e) {
-            System.out.println(e.getMessage());
-        }
+        List<Appointment> appointments = appointmentService.listAppointmentsByDoctorId(doctorId);
+        appointments.forEach(appointment -> {
+            Patient patient = appointmentService.getPatient(appointment.getPatientId());
+            System.out.println("Appointment ID : " + appointment.getAppointmentId() +
+                    " Doctor : " + doctor.getFullName() +
+                    " Patient : " + patient.getFullName() +
+                    " Time : " + appointment.getTime());
+        });
     }
 
     private void listAppointmentsByPatient() {
         System.out.println("----- PATIENT LIST ------");
         patientService.listPatients();
-        try {
-            System.out.print("Enter patient ID : ");
-            int patientId = input.nextInt();
-            input.nextLine();
-            Patient patient = appointmentService.getPatient(patientId);
-            List<Appointment> patientAppointments = appointmentService.listAppointmentsByPatientId(patientId);
+        System.out.print("Enter patient ID : ");
+        int patientId = input.nextInt();
+        input.nextLine();
+        Patient patient = appointmentService.getPatient(patientId);
+        List<Appointment> patientAppointments = appointmentService.listAppointmentsByPatientId(patientId);
 
-            patientAppointments.forEach(appointment -> {
-                Doctor doctor = appointmentService.getDoctor(appointment.getDoctorId());
-                System.out.println("Appointment ID : " + appointment.getAppointmentId() +
-                        " Patient : " + patient.getFullName() +
-                        " Doctor : " + doctor.getFullName() +
-                        " Time : " + appointment.getTime());
-            });
-        } catch (PatientNotFoundException | AppointmentNotFoundException e) {
-            System.out.println(e.getMessage());
-
-        }
-
+        patientAppointments.forEach(appointment -> {
+            Doctor doctor = appointmentService.getDoctor(appointment.getDoctorId());
+            System.out.println("Appointment ID : " + appointment.getAppointmentId() +
+                    " Patient : " + patient.getFullName() +
+                    " Doctor : " + doctor.getFullName() +
+                    " Time : " + appointment.getTime());
+        });
     }
 
-    private void listAllAppointments(){
-        try {
-            List<Appointment> appointments = appointmentService.listAllAppointmentsSortedByTime();
+    private void listAllAppointments() {
+        List<Appointment> appointments = appointmentService.listAllAppointmentsSortedByTime();
 
-            for (Appointment appointment : appointments) {
-                Doctor doctor = appointmentService.getDoctor(appointment.getDoctorId());
-                Patient patient =  appointmentService.getPatient(appointment.getPatientId());
+        for (Appointment appointment : appointments) {
+            Doctor doctor = appointmentService.getDoctor(appointment.getDoctorId());
+            Patient patient = appointmentService.getPatient(appointment.getPatientId());
 
-                System.out.println("Appointment ID : " + appointment.getAppointmentId() +
-                        " Time : " + appointment.getTime() +
-                        " Doctor : " + doctor.getFullName() +
-                        " Patient : " + patient.getFullName());
-            }
-        } catch (AppointmentNotFoundException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Appointment ID : " + appointment.getAppointmentId() +
+                    " Time : " + appointment.getTime() +
+                    " Doctor : " + doctor.getFullName() +
+                    " Patient : " + patient.getFullName());
         }
     }
 }
+
 

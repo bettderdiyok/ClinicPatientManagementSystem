@@ -18,23 +18,23 @@ public class PatientService {
         }
 
         if(!isValidName(fullname)) {
-            throw new InvalidNameException("Invalid fullname.");
+            throw new ValidationException("Invalid fullname.");
         }
 
         if(patientRepository.existsByNationalId(nationalID)) {
            throw new DuplicatePatientException("Patient already exists.");
         }
 
-        if(isValidAge(age)) {
-            throw new InvalidAgeException("Invalid age.");
+        if(!isValidAge(age)) {
+            throw new ValidationException("Invalid age.");
         }
 
-        if(!isMinorAge(age) && !hasGuardian){
+        if(isMinorAge(age) && !hasGuardian){
             throw new GuardianRequiredException("Guardian required for minor!");
         }
 
         if(!isValidComplaint(complaint)){
-            throw new InvalidComplaintException("Invalid complaint.");
+            throw new ValidationException("Invalid complaint.");
         }
         patientRepository.addPatient(fullname, nationalID, age, complaint);
     }
@@ -42,7 +42,7 @@ public class PatientService {
     public void deletePatient(int patientId){
         Patient patient = patientRepository.findPatient(patientId);
         if(patientId <= 0){
-            throw new InvalidPatientIdException("Patient ID must be positive.");
+            throw new ValidationException("Patient ID must be positive.");
         }
 
         if(patient == null) {

@@ -74,10 +74,11 @@ public class AppointmentService {
     }
 
     public void deleteAppointment(int appointmentId){
-        Appointment appointment = appointmentRepository.findById(appointmentId);
         if (appointmentId <= 0) {
-            throw new InvalidAppointmentIdException("Appointment ID must be positive.");
+            throw new ValidationException("Appointment ID must be positive.");
         }
+
+        Appointment appointment = appointmentRepository.findById(appointmentId);
 
         if(appointment == null) {
             throw new AppointmentNotFoundException("Appointment not found");

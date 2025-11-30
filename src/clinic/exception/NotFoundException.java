@@ -1,0 +1,7 @@
+package clinic.exception;
+
+public class NotFoundException extends ClinicException{
+    public NotFoundException(String message) {
+        super(message);
+    }
+}
