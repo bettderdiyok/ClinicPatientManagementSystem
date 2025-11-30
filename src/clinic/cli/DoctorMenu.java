@@ -2,14 +2,11 @@ package clinic.cli;
 
 import clinic.domain.Branch;
 import clinic.domain.DayOffType;
-import clinic.domain.Doctor;
 import clinic.domain.DoctorDayOff;
 import clinic.dto.UpdateDoctorRequest;
 import clinic.exception.*;
-import clinic.repo.DoctorRepository;
 import clinic.service.DoctorService;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;

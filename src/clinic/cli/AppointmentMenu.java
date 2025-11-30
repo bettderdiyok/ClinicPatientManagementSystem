@@ -3,6 +3,7 @@ package clinic.cli;
 import clinic.domain.Appointment;
 import clinic.domain.Doctor;
 import clinic.domain.Patient;
+import clinic.dto.UpdateAppointmentRequest;
 import clinic.exception.*;
 import clinic.service.AppointmentService;
 import clinic.service.DoctorService;
@@ -96,7 +97,70 @@ public class AppointmentMenu {
                     break;
                 case 3:
                     listAppointmentMenu();
-                    //TODO: Update Appointment
+                    try {
+                        System.out.print("Enter Appointment ID to update: ");
+                        int appointmentId = input.nextInt();
+                        input.nextLine();
+
+                        System.out.println("New doctor ID (Leave it blank if you don’t want to change it.): ");
+                        String newId = input.nextLine();
+
+                        System.out.println("New date YYYY-MM-DD (Leave it blank if you don’t want to change it.): ");
+                        String newTime = input.nextLine();
+
+                        System.out.println("New time hour (Leave it blank if you don’t want to change it.): ");
+                        String newHour = input.nextLine();
+
+                        System.out.println("New time minute (00-15-30-45) (Leave it blank if you don’t want to change it.): ");
+                        String newMinute = input.nextLine();
+
+                        UpdateAppointmentRequest request = new UpdateAppointmentRequest();
+
+                        if(!newId.isBlank()) {
+                            int newDoctorId = Integer.parseInt(newId);
+                            request.setDoctorId(newDoctorId);
+                        }
+
+                        boolean anyTimeFieldFilled =
+                                !newTime.isBlank() || !newHour.isBlank() || !newMinute.isBlank();
+
+                        if (anyTimeFieldFilled) {
+                            if (newTime.isBlank() || newHour.isBlank() || newMinute.isBlank()) {
+                                System.out.println("If you want to change the appointment time, you must enter date, hour and minute.");
+                                break;
+                            }
+
+                            LocalDate date;
+                            try {
+                                date = LocalDate.parse(newTime);
+                            } catch (Exception e) {
+                                System.out.println("Invalid date format. Use YYYY-MM-DD.");
+                                break;
+                            }
+
+                            int hour = Integer.parseInt(newHour);
+                            int minute = Integer.parseInt(newMinute);
+
+                            LocalDateTime time = LocalDateTime.of(
+                                    date.getYear(),
+                                    date.getMonthValue(),
+                                    date.getDayOfMonth(),
+                                    hour,
+                                    minute);
+
+                            request.setTime(time);
+                        }
+
+                        appointmentService.updateAppointment(appointmentId, request);
+                        System.out.println("Appointment updated.");
+
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid date.");
+                    } catch (AppointmentNotFoundException |
+                    DoctorNotFoundException |
+                    InvalidAppointmentTimeException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 4:
                     listAppointmentMenu();

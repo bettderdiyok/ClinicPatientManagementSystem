@@ -1,14 +1,10 @@
 package clinic.repo;
 
-
-import clinic.domain.Doctor;
 import clinic.domain.Patient;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 public class PatientRepository {
     ArrayList<Patient> patients = new ArrayList<>();
-
     public ArrayList<Patient> getPatients() {
         return patients;
     }

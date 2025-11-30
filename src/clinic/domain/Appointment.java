@@ -1,14 +1,13 @@
 package clinic.domain;
 
 import clinic.util.IdGenerator;
-
 import java.time.LocalDateTime;
 
 public class Appointment {
     private final int appointmentId;
-    private final int doctorId;
+    private int doctorId;
     private final int patientId;
-    private final LocalDateTime time;
+    private LocalDateTime time;
 
     private enum appointmentStatus {
         BOOKED,
@@ -36,5 +35,13 @@ public class Appointment {
 
     public LocalDateTime getTime() {
         return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    public void setDoctorId(int doctorId) {
+        this.doctorId = doctorId;
     }
 }

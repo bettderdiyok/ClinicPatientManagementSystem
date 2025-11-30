@@ -3,6 +3,7 @@ package clinic.service;
 import clinic.domain.Appointment;
 import clinic.domain.Doctor;
 import clinic.domain.Patient;
+import clinic.dto.UpdateAppointmentRequest;
 import clinic.exception.*;
 import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorDayOffRepository;
@@ -10,7 +11,6 @@ import clinic.repo.DoctorRepository;
 import clinic.repo.PatientRepository;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -93,17 +93,52 @@ public class AppointmentService {
         appointmentRepository.deleteAppointment(appointmentId);
     }
 
+    public void updateAppointment(int appointmentId, UpdateAppointmentRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request cannot be null");
+        }
+
+        Appointment appointment = appointmentRepository.findById(appointmentId);
+        if (appointment == null) {
+            throw new AppointmentNotFoundException("Appointment not found");
+        }
+
+        if (request.getDoctorId() != 0) {
+            Doctor doctor = doctorRepository.findByDoctorId(request.getDoctorId());
+            if (doctor == null) {
+                throw new DoctorNotFoundException("Doctor not found");
+            }
+
+            if (request.getTime() == null) {
+                if (appointmentRepository.existsDoctorAndDateTime(request.getDoctorId(), appointment.getTime())) {
+                    throw new DoctorAppointmentAlreadyBookedException("Doctor already has an appointment at that time");
+                }
+            }
+
+            appointment.setDoctorId(request.getDoctorId());
+            if (request.getTime() != null) {
+                int effectiveDoctorId = (request.getDoctorId() != 0)
+                        ? request.getDoctorId()
+                        : appointment.getDoctorId();
+                if (appointmentRepository.existsDoctorAndDateTime(effectiveDoctorId, request.getTime())) {
+                    throw new DoctorAppointmentAlreadyBookedException("Doctor already has an appointment at that time");
+                }
+                appointment.setTime(request.getTime());
+            }
+        }
+    }
+
+
     public List<Appointment> listAppointmentsByDoctorId(int doctorId) {
         if(!doctorRepository.existsBySystemId(doctorId)){
             throw new DoctorNotFoundException("Doctor not found");
         }
-        List<Appointment> appointmentList = appointmentRepository.findAppointmentsByDoctorId(doctorId);
 
+        List<Appointment> appointmentList = appointmentRepository.findAppointmentsByDoctorId(doctorId);
         if(appointmentList.isEmpty()){
            throw new AppointmentNotFoundException("This doctor has no appointments.");
         }
         return appointmentList;
-
     }
 
     public List<Appointment> listAppointmentsByPatientId(int patientId){
@@ -115,39 +150,32 @@ public class AppointmentService {
         if(appointmentList.isEmpty()){
             throw new AppointmentNotFoundException("This patient has no appointments.");
         }
-
         return appointmentList;
-
-
     }
 
     public List<Appointment> listAllAppointmentsSortedByTime(){
         List<Appointment> allAppointments = appointmentRepository.allAppointments();
-
         if(allAppointments.isEmpty()){
             throw new AppointmentNotFoundException("There is no appointment");
         }
-
         return  allAppointments.stream().sorted(Comparator.comparing(Appointment::getTime)).toList();
-
     }
 
     public Patient getPatient(int patientId) {
-        if (!patientRepository.existsBySystemId(patientId)) {
+        Patient patient = patientRepository.findPatient(patientId);
+        if (patient == null) {
             throw new PatientNotFoundException("Patient not found.");
         }
-        return patientRepository.findPatient(patientId);
+        return patient;
     }
 
     public Doctor getDoctor(int doctorId) {
-        if (!doctorRepository.existsBySystemId(doctorId)) {
+        Doctor doctor = doctorRepository.findByDoctorId(doctorId);
+        if (doctor == null) {
             throw new DoctorNotFoundException("Doctor not found.");
         }
-        return doctorRepository.findByDoctorId(doctorId);
+        return doctor;
     }
-
-
-
 
 
 }

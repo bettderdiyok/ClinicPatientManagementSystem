@@ -11,8 +11,6 @@ public class AppointmentRepository {
        return  appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId);
     }
 
-
-
     public boolean existsPatientAndDateTime(int patientId, LocalDateTime time){
         return appointments.stream().anyMatch(appointment -> appointment.getPatientId() == patientId && appointment.getTime().equals(time));
      /* for (Appointment appointment : appointments){
@@ -23,6 +21,7 @@ public class AppointmentRepository {
         return false;
         */
     }
+
     public void addAppointment(Appointment appointment){
         appointments.add(appointment);
 
@@ -32,19 +31,12 @@ public class AppointmentRepository {
        appointments.removeIf(appointment -> appointment.getAppointmentId() == appointmentId);
     }
 
-    public void updateAppointment(){
-
-    }
-
-
-
     public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
         return appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId && appointment.getTime().equals(time));
     }
 
     public List<Appointment> findAppointmentsByDoctorId(int doctorId){
         return appointments.stream().filter(appointment -> appointment.getDoctorId() == doctorId).toList();
-
     }
 
     public List<Appointment> findAppointmentsByPatientId(int patientId) {
