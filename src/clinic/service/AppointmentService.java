@@ -104,31 +104,38 @@ public class AppointmentService {
             throw new AppointmentNotFoundException("Appointment not found");
         }
 
-        if (request.getDoctorId() != 0) {
+        boolean doctorChanging = request.getDoctorId() != 0;
+        boolean timeChanging = request.getTime() != null;
+
+        if(!doctorChanging && !timeChanging) {
+            throw new ValidationException("At least one field must be provided to update the appointment");
+        }
+
+        int effectiveDoctorId = doctorChanging ? request.getDoctorId()
+                : appointment.getDoctorId();
+
+        LocalDateTime targetTime = timeChanging ? request.getTime()
+                : appointment.getTime();
+
+        if (doctorChanging) {
             Doctor doctor = doctorRepository.findByDoctorId(request.getDoctorId());
             if (doctor == null) {
                 throw new DoctorNotFoundException("Doctor not found");
             }
+        }
 
-            if (request.getTime() == null) {
-                if (appointmentRepository.existsDoctorAndDateTime(request.getDoctorId(), appointment.getTime())) {
-                    throw new DoctorAppointmentAlreadyBookedException("Doctor already has an appointment at that time");
-                }
-            }
+        if (appointmentRepository.existsDoctorAndDateTime(effectiveDoctorId, targetTime)) {
+            throw new DoctorAppointmentAlreadyBookedException("Doctor already has an appointment at that time");
+        } //The conflict check is performed in a single place.
 
+        if (doctorChanging) {
             appointment.setDoctorId(request.getDoctorId());
-            if (request.getTime() != null) {
-                int effectiveDoctorId = (request.getDoctorId() != 0)
-                        ? request.getDoctorId()
-                        : appointment.getDoctorId();
-                if (appointmentRepository.existsDoctorAndDateTime(effectiveDoctorId, request.getTime())) {
-                    throw new DoctorAppointmentAlreadyBookedException("Doctor already has an appointment at that time");
-                }
-                appointment.setTime(request.getTime());
-            }
+        }
+
+        if (timeChanging) {
+            appointment.setTime(request.getTime());
         }
     }
-
 
     public List<Appointment> listAppointmentsByDoctorId(int doctorId) {
         if(!doctorRepository.existsBySystemId(doctorId)){

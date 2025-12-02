@@ -89,8 +89,10 @@ public class AppointmentMenu {
                         listAppointmentMenu();
 
                         System.out.print("Enter Appointment ID to update: ");
-                        appointmentId = input.nextInt();
+                        int appointmentIdNo = input.nextInt();
                         input.nextLine();
+
+                        doctorService.listDoctors();
 
                         System.out.println("New doctor ID (Leave it blank if you don’t want to change it.): ");
                         String newId = input.nextLine();
@@ -140,17 +142,14 @@ public class AppointmentMenu {
 
                             request.setTime(timeDate);
                         }
-                        appointmentService.updateAppointment(appointmentId, request);
-                        System.out.println("Appointment updated.");
 
+                        appointmentService.updateAppointment(appointmentIdNo, request);
+                        System.out.println("Appointment updated.");
                         break;
                     case 4:
                         listAppointmentMenu();
                         break;
                     case 5:
-                        showTheMenu();
-                        break;
-                    case 6:
                         isTrue = false;
                 }
             } catch (NotFoundException | ValidationException | ArrayIndexOutOfBoundsException | BusinessRuleException e) {
@@ -164,8 +163,7 @@ public class AppointmentMenu {
                 "2-Cancel Appointment \n" +
                 "3-Update Appointment\n" +
                 "4-List\n" +
-                "5-Menu Again\n" +
-                "6-Back to Main Menu\n"
+                "5-Back to Main Menu\n"
         );
     }
 

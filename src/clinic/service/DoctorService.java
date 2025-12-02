@@ -30,7 +30,7 @@ public class DoctorService {
             throw new InvalidNationalIdException("It is invalid id!");
         }
 
-        if (!isValidFullname(fullName)) {
+        if (!isValidFullName(fullName)) {
             throw new ValidationException("Invalid name.");
         }
 
@@ -106,8 +106,8 @@ public class DoctorService {
         return nationalId != null && nationalId.matches("\\d{11}");
     }
 
-    public boolean isValidFullname(String fullname) {
-        return fullname != null && fullname.matches("^[A-Za-zÇçĞğİıÖöŞşÜü\\s]+$");
+    public boolean isValidFullName(String fullName) {
+        return fullName != null && fullName.matches("^[A-Za-zÇçĞğİıÖöŞşÜü\\s]+$");
     }
 
     public boolean isValidBranch(int branchNum) {
