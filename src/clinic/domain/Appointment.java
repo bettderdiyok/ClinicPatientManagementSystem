@@ -9,16 +9,16 @@ public class Appointment {
     private final int patientId;
     private LocalDateTime time;
 
-    private enum appointmentStatus {
-        BOOKED,
-        CANCELED
-    }
+    private AppointmentStatus status;
+    private AppointmentType type;
 
     public Appointment(int doctorId, int patientId, LocalDateTime time) {
+        this.appointmentId = IdGenerator.nextAppointmentID();
         this.doctorId = doctorId;
         this.patientId = patientId;
         this.time = time;
-        this.appointmentId = IdGenerator.nextAppointmentID();
+        this.status = AppointmentStatus.BOOKED; //default
+        this.type = AppointmentType.FIRST_VISIT; //default
     }
 
     public int getAppointmentId() {
@@ -43,5 +43,21 @@ public class Appointment {
 
     public void setDoctorId(int doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public AppointmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AppointmentStatus status) {
+        this.status = status;
+    }
+
+    public AppointmentType getType() {
+        return type;
+    }
+
+    public void setType(AppointmentType type) {
+        this.type = type;
     }
 }

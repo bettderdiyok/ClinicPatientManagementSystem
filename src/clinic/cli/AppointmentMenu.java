@@ -1,6 +1,7 @@
 package clinic.cli;
 
 import clinic.domain.Appointment;
+import clinic.domain.AppointmentStatus;
 import clinic.domain.Doctor;
 import clinic.domain.Patient;
 import clinic.dto.UpdateAppointmentRequest;
@@ -82,12 +83,11 @@ public class AppointmentMenu {
                         System.out.println("Enter appointment id : ");
                         int appointmentId = input.nextInt();
 
-                        appointmentService.deleteAppointment(appointmentId);
-                        System.out.println("Appointment deleted.");
+                        appointmentService.cancelAppointment(appointmentId);
+                        System.out.println("Appointment canceled.");
                         break;
                     case 3:
                         listAppointmentMenu();
-
                         System.out.print("Enter Appointment ID to update: ");
                         int appointmentIdNo = input.nextInt();
                         input.nextLine();
@@ -172,6 +172,9 @@ public class AppointmentMenu {
         System.out.println("1 - List all appointments");
         System.out.println("2 - List appointments by doctor");
         System.out.println("3 - List appointments by patient");
+        System.out.println("4 - Active appointments");
+        System.out.println("5 - Canceled appointments");
+
         System.out.print("Your choice: ");
 
         int listChoice = input.nextInt();
@@ -186,6 +189,12 @@ public class AppointmentMenu {
                 break;
             case 3:
                 listAppointmentsByPatient();
+                break;
+            case 4:
+                listActiveAppointment();
+                break;
+            case 5:
+                listCanceledAppointment();
                 break;
             default:
                 System.out.println("Invalid choice.");
@@ -239,9 +248,48 @@ public class AppointmentMenu {
             System.out.println("Appointment ID : " + appointment.getAppointmentId() +
                     " Time : " + appointment.getTime() +
                     " Doctor : " + doctor.getFullName() +
-                    " Patient : " + patient.getFullName());
+                    " Patient : " + patient.getFullName() +
+                    " Appointment Status : " + appointment.getStatus());
         }
     }
+
+    private void listActiveAppointment(){
+        System.out.println("----- BOOKED APPOINTMENTS -----");
+
+        appointmentService.getActiveAppointments()
+                .forEach(appointment -> {
+                    Doctor doctor = appointmentService.getDoctor(appointment.getDoctorId());
+                    Patient patient = appointmentService.getPatient(appointment.getPatientId());
+
+                    System.out.println(
+                            "Appointment ID : " + appointment.getAppointmentId() +
+                                    " | Time : " + appointment.getTime() +
+                                    " | Doctor : " + doctor.getFullName() +
+                                    " | Patient : " + patient.getFullName() +
+                                    " | Status : " + appointment.getStatus()
+                    );
+                });
+    }
+
+
+    private void listCanceledAppointment(){
+        System.out.println("----- CANCELED APPOINTMENTS -----");
+
+        appointmentService.getCanceledAppointments()
+                .forEach(appointment -> {
+                    Doctor doctor = appointmentService.getDoctor(appointment.getDoctorId());
+                    Patient patient = appointmentService.getPatient(appointment.getPatientId());
+
+                    System.out.println(
+                            "Appointment ID : " + appointment.getAppointmentId() +
+                                    " | Time : " + appointment.getTime() +
+                                    " | Doctor : " + doctor.getFullName() +
+                                    " | Patient : " + patient.getFullName() +
+                                    " | Status : " + appointment.getStatus()
+                    );
+                });
+    }
+
 }
 
 

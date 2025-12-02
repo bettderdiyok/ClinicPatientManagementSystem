@@ -27,10 +27,6 @@ public class AppointmentRepository {
 
     }
 
-    public void deleteAppointment(int appointmentId){
-       appointments.removeIf(appointment -> appointment.getAppointmentId() == appointmentId);
-    }
-
     public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
         return appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId && appointment.getTime().equals(time));
     }
@@ -44,7 +40,7 @@ public class AppointmentRepository {
     }
 
     public List<Appointment> allAppointments(){
-        return  new ArrayList<>(appointments); //defensive copy
+        return new ArrayList<>(appointments); //defensive copy
     }
 
     public Appointment findById(int appointmentId) {

@@ -1,8 +1,6 @@
 package clinic.service;
 
-import clinic.domain.Appointment;
-import clinic.domain.Doctor;
-import clinic.domain.Patient;
+import clinic.domain.*;
 import clinic.dto.UpdateAppointmentRequest;
 import clinic.exception.*;
 import clinic.repo.AppointmentRepository;
@@ -70,10 +68,13 @@ public class AppointmentService {
             }
 
              Appointment appointment = new Appointment(doctorId, patientId, time);
+             appointment.setStatus(AppointmentStatus.BOOKED);
+             appointment.setType(AppointmentType.FIRST_VISIT);
+
              appointmentRepository.addAppointment(appointment);
     }
 
-    public void deleteAppointment(int appointmentId){
+    public void cancelAppointment(int appointmentId){
         if (appointmentId <= 0) {
             throw new ValidationException("Appointment ID must be positive.");
         }
@@ -91,7 +92,7 @@ public class AppointmentService {
         if(appointment.getTime().minusHours(24).isBefore(now)){
             throw new InvalidAppointmentTimeException("You cannot cancel less than 24 hours before the appointment");
         }
-        appointmentRepository.deleteAppointment(appointmentId);
+        appointment.setStatus(AppointmentStatus.CANCELED);
     }
 
     public void updateAppointment(int appointmentId, UpdateAppointmentRequest request) {
@@ -146,7 +147,9 @@ public class AppointmentService {
         if(appointmentList.isEmpty()){
            throw new AppointmentNotFoundException("This doctor has no appointments.");
         }
-        return appointmentList;
+        return appointmentList.stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.BOOKED)
+                .toList();
     }
 
     public List<Appointment> listAppointmentsByPatientId(int patientId){
@@ -158,7 +161,9 @@ public class AppointmentService {
         if(appointmentList.isEmpty()){
             throw new AppointmentNotFoundException("This patient has no appointments.");
         }
-        return appointmentList;
+        return appointmentList.stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.BOOKED)
+                .toList();
     }
 
     public List<Appointment> listAllAppointmentsSortedByTime(){
@@ -166,6 +171,7 @@ public class AppointmentService {
         if(allAppointments.isEmpty()){
             throw new AppointmentNotFoundException("There is no appointment");
         }
+
         return  allAppointments.stream().sorted(Comparator.comparing(Appointment::getTime)).toList();
     }
 
@@ -185,5 +191,15 @@ public class AppointmentService {
         return doctor;
     }
 
+    public List<Appointment> getActiveAppointments(){
+        return appointmentRepository.allAppointments().stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.BOOKED)
+                .toList();
+    }
 
+    public List<Appointment> getCanceledAppointments(){
+        return appointmentRepository.allAppointments().stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.CANCELED)
+                .toList();
+    }
 }
