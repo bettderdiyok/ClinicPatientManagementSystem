@@ -1,6 +1,8 @@
 package clinic.repo;
 
 import clinic.domain.Appointment;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,4 +51,14 @@ public class AppointmentRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    public boolean existsByDoctorPatientAndDate(int doctorId, int patientId, LocalDate date){
+        return appointments.stream()
+                .anyMatch(appointment ->
+                        appointment.getDoctorId() == doctorId &&
+                        appointment.getPatientId() == patientId &&
+                                appointment.getTime().toLocalDate().equals(date)
+                );
+    }
+
 }

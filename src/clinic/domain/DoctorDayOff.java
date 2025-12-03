@@ -1,8 +1,6 @@
 package clinic.domain;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
-
 
 public class DoctorDayOff {
     private final int doctorId;

@@ -2,7 +2,6 @@ package clinic.repo;
 
 import clinic.domain.Doctor;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 public class DoctorRepository {
     private final ArrayList<Doctor> doctorArrayList = new ArrayList<>();
@@ -47,13 +46,12 @@ public class DoctorRepository {
         }
     }
 
-    public  Doctor findByDoctorId(int doctorId){
+    public  Doctor findByDoctorId(int doctorId) {
         return doctorArrayList.stream()
                 .filter(doctor -> doctor.getDoctorId() == doctorId)
                 .findFirst()
                 .orElse(null);
     }
-
 
 }
 

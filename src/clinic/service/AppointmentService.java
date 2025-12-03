@@ -67,6 +67,10 @@ public class AppointmentService {
                 throw new PatientAppointmentAlreadyBookedException("The patient already has an appointment at that time.");
             }
 
+            if(appointmentRepository.existsByDoctorPatientAndDate(doctorId, patientId, time.toLocalDate())){
+                throw new PatientAlreadyHasAppointmentThatDayException("You already have an appointment with this doctor on this day.");
+            }
+
              Appointment appointment = new Appointment(doctorId, patientId, time);
              appointment.setStatus(AppointmentStatus.BOOKED);
              appointment.setType(AppointmentType.FIRST_VISIT);
@@ -202,4 +206,6 @@ public class AppointmentService {
                 .filter(appointment -> appointment.getStatus() == AppointmentStatus.CANCELED)
                 .toList();
     }
+
+
 }

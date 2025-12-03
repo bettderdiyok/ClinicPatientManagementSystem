@@ -1,5 +1,6 @@
 package clinic.repo;
 
+import clinic.domain.Appointment;
 import clinic.domain.Patient;
 import java.util.ArrayList;
 

@@ -1,13 +1,12 @@
 package clinic.service;
-import clinic.domain.Branch;
-import clinic.domain.Doctor;
-import clinic.domain.DoctorDayOff;
+import clinic.domain.*;
 import clinic.dto.UpdateDoctorRequest;
 import clinic.exception.*;
 import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorDayOffRepository;
 import clinic.repo.DoctorRepository;
 
+import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -86,6 +85,13 @@ public class DoctorService {
            throw new InvalidDayOffException("Doctor already has a day off on this date.");
         }
         doctorDayOffRepository.addDayOff(dayOff);
+
+        List<Appointment>  appointments = appointmentRepository.findAppointmentsByDoctorId(dayOff.getDoctorId());
+        for (Appointment appointment : appointments) {
+            appointment.setStatus(AppointmentStatus.CANCELED);
+
+        }
+
     }
 
     public void listDoctors() {
@@ -127,6 +133,7 @@ public class DoctorService {
     public Doctor findByDoctorId(int id){
         return doctorRepository.findByDoctorId(id);
     }
+
 }
 
 

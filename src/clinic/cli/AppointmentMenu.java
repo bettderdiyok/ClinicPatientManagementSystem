@@ -82,9 +82,12 @@ public class AppointmentMenu {
                         listAppointmentMenu();
                         System.out.println("Enter appointment id : ");
                         int appointmentId = input.nextInt();
-
-                        appointmentService.cancelAppointment(appointmentId);
-                        System.out.println("Appointment canceled.");
+                        if(confirmMessage("Are you sure you want to cancel this appointment?")){
+                            appointmentService.cancelAppointment(appointmentId);
+                            System.out.println("Appointment canceled.");
+                        } else {
+                            System.out.println("Appointment cancellation has been cancelled.");
+                        }
                         break;
                     case 3:
                         listAppointmentMenu();
@@ -288,6 +291,12 @@ public class AppointmentMenu {
                                     " | Status : " + appointment.getStatus()
                     );
                 });
+    }
+
+    private boolean confirmMessage(String message){
+        System.out.println(message + "(yes/no)");
+        String answer = input.nextLine().trim().toLowerCase();
+        return answer.equals("y") || answer.equals("yes");
     }
 
 }
