@@ -6,7 +6,6 @@ import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorDayOffRepository;
 import clinic.repo.DoctorRepository;
 
-import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;

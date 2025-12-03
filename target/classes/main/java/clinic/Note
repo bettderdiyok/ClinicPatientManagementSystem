@@ -1,0 +1,23 @@
+Layered Architecture:
+
+- clinic.domain -
+The classes that represent concepts of the real world.
+
+- clinic.repo -
+ The layer that is responsible for storing and retrieving data.It adds, deletes, and searches records using
+ a List, Map, or (in the future) a database.
+
+- clinic.service -
+Business rules are defined here. This layer executes the system logic (use cases).
+The service layer defines how the system operates.
+
+- clinic.cli -
+The interface between the user and the system.
+
+-clinic.exception -
+Custom exception types that may occur in the application are defined here.
+
+-cli -> Presentation Layer -> User interaction. It only provides request–response handling.
+-service -> Business Rules
+-domain -> It only includes data and basic behaviors.
+

@@ -1,7 +1,6 @@
 package clinic.cli;
 
 import clinic.domain.Appointment;
-import clinic.domain.AppointmentStatus;
 import clinic.domain.Doctor;
 import clinic.domain.Patient;
 import clinic.dto.UpdateAppointmentRequest;

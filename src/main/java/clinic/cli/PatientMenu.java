@@ -3,7 +3,6 @@ package clinic.cli;
 import clinic.dto.UpdatePatientRequest;
 import clinic.exception.BusinessRuleException;
 import clinic.exception.NotFoundException;
-import clinic.exception.PatientNotFoundException;
 import clinic.exception.ValidationException;
 import clinic.service.PatientService;
 
