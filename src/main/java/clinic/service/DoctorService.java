@@ -42,6 +42,7 @@ public class DoctorService {
 
         Doctor doctor = new Doctor(nationalId, fullName, Branch.values()[branchNum - 1]);
         doctorRepository.add(doctor);
+        doctorRepository.saveToDoctors();
     }
 
     public void deleteDoctor(int doctorId) {
@@ -53,6 +54,7 @@ public class DoctorService {
             throw new DoctorHasAppointmentsException("You can't delete this doctor because he has at least appointment.");
         }
         doctorRepository.delete(doctorId);
+        doctorRepository.saveToDoctors();
     }
 
     public void updateDoctor(int id, UpdateDoctorRequest request) {
@@ -65,6 +67,7 @@ public class DoctorService {
         if(request.getBranch() != null){
             doctor.setBranch(request.getBranch());
         }
+        doctorRepository.saveToDoctors();
     }
 
     public void addDayOff(DoctorDayOff dayOff) {
@@ -88,7 +91,7 @@ public class DoctorService {
         List<Appointment>  appointments = appointmentRepository.findAppointmentsByDoctorId(dayOff.getDoctorId());
         for (Appointment appointment : appointments) {
             appointment.setStatus(AppointmentStatus.CANCELED);
-
+            appointmentRepository.saveToJson();
         }
 
     }

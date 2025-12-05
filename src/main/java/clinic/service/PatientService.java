@@ -37,6 +37,7 @@ public class PatientService {
             throw new ValidationException("Invalid complaint.");
         }
         patientRepository.addPatient(fullname, nationalID, age, complaint);
+        patientRepository.saveToPatients();
     }
 
     public void deletePatient(int patientId){
@@ -49,6 +50,7 @@ public class PatientService {
             throw new PatientNotFoundException("Patient not found.");
         }
          patientRepository.deletePatient(patientId);
+         patientRepository.saveToPatients();
     }
 
     public void listPatients(){
@@ -72,6 +74,7 @@ public class PatientService {
         if (request.getComplaint() != null) {
             patient.setComplaint(request.getComplaint());
         }
+        patientRepository.saveToPatients();
     }
 
     public boolean isValidNationalID(String nationalId){

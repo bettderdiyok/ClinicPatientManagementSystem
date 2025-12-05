@@ -81,6 +81,7 @@ public class AppointmentMenu {
                         listAppointmentMenu();
                         System.out.println("Enter appointment id : ");
                         int appointmentId = input.nextInt();
+                        input.nextLine();
                         if(confirmMessage("Are you sure you want to cancel this appointment?")){
                             appointmentService.cancelAppointment(appointmentId);
                             System.out.println("Appointment canceled.");

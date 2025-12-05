@@ -76,6 +76,7 @@ public class AppointmentService {
              appointment.setType(AppointmentType.FIRST_VISIT);
 
              appointmentRepository.addAppointment(appointment);
+             appointmentRepository.saveToJson();
     }
 
     public void cancelAppointment(int appointmentId){
@@ -97,6 +98,7 @@ public class AppointmentService {
             throw new InvalidAppointmentTimeException("You cannot cancel less than 24 hours before the appointment");
         }
         appointment.setStatus(AppointmentStatus.CANCELED);
+        appointmentRepository.saveToJson();
     }
 
     public void updateAppointment(int appointmentId, UpdateAppointmentRequest request) {
@@ -140,6 +142,7 @@ public class AppointmentService {
         if (timeChanging) {
             appointment.setTime(request.getTime());
         }
+        appointmentRepository.saveToJson();
     }
 
     public List<Appointment> listAppointmentsByDoctorId(int doctorId) {

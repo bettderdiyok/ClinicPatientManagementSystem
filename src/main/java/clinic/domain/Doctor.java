@@ -4,7 +4,7 @@ import clinic.util.IdGenerator;
 
 public class Doctor extends Person {
     private  Branch branch;
-    private int doctorId;
+    private final int doctorId;
 
     public Doctor(String fullName, String nationalID, Branch branch) {
         super(nationalID, fullName);

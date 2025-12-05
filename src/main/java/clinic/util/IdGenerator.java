@@ -16,4 +16,8 @@ public class IdGenerator {
     public static int nextAppointmentID(){
         return ++appointmentIdCounter;
     }
+
+    public static void initAppointmentId(int startFrom) {
+        appointmentIdCounter = startFrom;
+    }
 }

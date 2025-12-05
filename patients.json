@@ -1,0 +1,16 @@
+[
+  {
+    "patientId": 1,
+    "age": 48,
+    "complaint": "Akciğer tümor",
+    "fullName": "Melek Limon",
+    "nationalID": "37584321900"
+  },
+  {
+    "patientId": 3,
+    "age": 55,
+    "complaint": "Eklem ağrısı",
+    "fullName": "Ercan Ekren",
+    "nationalID": "37685943212"
+  }
+]
