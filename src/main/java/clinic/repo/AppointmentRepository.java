@@ -27,6 +27,11 @@ public class AppointmentRepository {
             .create();
 
     private ArrayList<Appointment> appointments = new ArrayList<>();
+
+    public AppointmentRepository() {
+        loadFromJson();
+    }
+
     public boolean existsAppointmentByDoctorId(int doctorId){
        return  appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId);
     }
@@ -73,9 +78,8 @@ public class AppointmentRepository {
                 .max()
                 .orElse(0);
 
-        IdGenerator.initAppointmentId(maxId + 1);
+        IdGenerator.initAppointmentId(maxId);
     }
-
 
     public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
         return appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId && appointment.getTime().equals(time));

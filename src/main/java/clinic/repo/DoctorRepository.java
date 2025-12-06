@@ -15,6 +15,10 @@ public class DoctorRepository {
             .setPrettyPrinting()
             .create();
 
+    public DoctorRepository() {
+        loadTheDoctors();
+    }
+
     public ArrayList<Doctor> getDoctorArrayList() {
         return doctorArrayList;
     }

@@ -16,12 +16,9 @@ public class MainMenu {
         boolean isTrue = true;
         int choice;
         DoctorRepository doctorRepository = new DoctorRepository();
-        doctorRepository.loadTheDoctors();
         DoctorDayOffRepository doctorDayOffRepository = new DoctorDayOffRepository();
         AppointmentRepository appointmentRepository = new AppointmentRepository();
-        appointmentRepository.loadFromJson();
         PatientRepository patientRepository = new PatientRepository();
-        patientRepository.loadToPatients();
 
         DoctorService doctorService = new DoctorService(doctorRepository, doctorDayOffRepository, appointmentRepository );
         PatientService patientService = new PatientService(patientRepository);
