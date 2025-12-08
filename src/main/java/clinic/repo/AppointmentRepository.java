@@ -1,6 +1,7 @@
 package clinic.repo;
 
 import clinic.domain.Appointment;
+import clinic.domain.AppointmentStatus;
 import clinic.util.IdGenerator;
 import com.google.gson.*;
 
@@ -84,6 +85,8 @@ public class AppointmentRepository {
                 .orElse(0);
 
         IdGenerator.initAppointmentId(maxId);
+        markPatAppointmentsAsMissed();
+        saveToJson();
     }
 
     public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
@@ -117,4 +120,14 @@ public class AppointmentRepository {
                                 appointment.getTime().toLocalDate().equals(date)
                 );
     }
+
+    private void markPatAppointmentsAsMissed() {
+        LocalDateTime now = LocalDateTime.now();
+
+        appointments.stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.BOOKED)
+                .filter(appointment -> appointment.getTime().isBefore(now))
+                .forEach(appointment -> appointment.setStatus(AppointmentStatus.MISSID));
+    }
+
 }

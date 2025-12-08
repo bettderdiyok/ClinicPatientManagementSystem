@@ -1,11 +1,14 @@
 package clinic.cli;
 
+import clinic.exception.NotFoundException;
+import clinic.exception.ValidationException;
 import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorDayOffRepository;
 import clinic.repo.DoctorRepository;
 import clinic.repo.PatientRepository;
 import clinic.service.AppointmentService;
 import clinic.service.DoctorService;
+import clinic.service.PatientAppointmentCheckInService;
 import clinic.service.PatientService;
 
 import java.util.Scanner;
@@ -21,12 +24,14 @@ public class MainMenu {
         PatientRepository patientRepository = new PatientRepository();
 
         DoctorService doctorService = new DoctorService(doctorRepository, doctorDayOffRepository, appointmentRepository );
-        PatientService patientService = new PatientService(patientRepository);
+        PatientService patientService = new PatientService(patientRepository, doctorRepository);
         AppointmentService appointmentService = new AppointmentService(appointmentRepository, doctorRepository, patientRepository, doctorDayOffRepository);
+        PatientAppointmentCheckInService appointmentCheckInService = new PatientAppointmentCheckInService(patientRepository, appointmentRepository);
 
         AppointmentMenu appointmentMenu = new AppointmentMenu(appointmentService, doctorService, patientService);
         DoctorMenu doctorMenu = new DoctorMenu(doctorService);
         PatientMenu patientMenu = new PatientMenu(patientService);
+
 
         System.out.println("Welcome to the Clinic Patient Management System");
         while(isTrue){
@@ -45,6 +50,15 @@ public class MainMenu {
                 case 3:
                     appointmentMenu.showTheAppointmentMenu();
                     break;
+                case 4:
+                    System.out.print("Enter patient nationalId : ");
+                    String nationalId = input.nextLine();
+                    try {
+                        appointmentCheckInService.checkIn(nationalId);
+                    } catch (ValidationException | NotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
+
                 case 0:
                     isTrue = false;
                     break;
@@ -58,6 +72,7 @@ public class MainMenu {
                 1-Patient Management
                 2-Doctor Management
                 3-Appointment
+                4-Patient Appointment Check-In
                 """
                );
     }

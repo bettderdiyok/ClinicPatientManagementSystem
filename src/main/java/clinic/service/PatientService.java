@@ -3,17 +3,20 @@ package clinic.service;
 import clinic.domain.Patient;
 import clinic.dto.UpdatePatientRequest;
 import clinic.exception.*;
+import clinic.repo.DoctorRepository;
 import clinic.repo.PatientRepository;
+import clinic.util.NationalIdValidator;
 
 public class PatientService {
     private final PatientRepository patientRepository;
-    public PatientService(PatientRepository patientRepository) {
+    private final DoctorRepository doctorRepository;
+    public PatientService(PatientRepository patientRepository, DoctorRepository doctorRepository) {
         this.patientRepository = patientRepository;
+        this.doctorRepository = doctorRepository;
     }
 
-
     public void addPatient(String fullname, String nationalID, int age, boolean hasGuardian, String complaint){
-        if(!isValidNationalID(nationalID)){
+        if(!NationalIdValidator.isValidNationalId(nationalID)){
             throw new InvalidNationalIdException("Invalid national ID.");
         }
 
@@ -36,6 +39,11 @@ public class PatientService {
         if(!isValidComplaint(complaint)){
             throw new ValidationException("Invalid complaint.");
         }
+
+        if (doctorRepository.getDoctorArrayList().isEmpty()) {
+            throw new ValidationException("There is no doctor in the system.");
+        }
+
         patientRepository.addPatient(fullname, nationalID, age, complaint);
 
     }
@@ -74,10 +82,6 @@ public class PatientService {
             patient.setComplaint(request.getComplaint());
         }
         patientRepository.updatePatients();
-    }
-
-    public boolean isValidNationalID(String nationalId){
-        return (nationalId != null && nationalId.matches("\\d{11}"));
     }
 
     public boolean isValidName(String name){

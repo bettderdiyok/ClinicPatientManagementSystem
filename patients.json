@@ -1,0 +1,30 @@
+[
+  {
+    "patientId": 1,
+    "age": 48,
+    "complaint": "Akciğer ağrısı",
+    "fullName": "Melek Limon",
+    "nationalID": "75890987214"
+  },
+  {
+    "patientId": 2,
+    "age": 58,
+    "complaint": "Karın ağrısı ",
+    "fullName": "Ercan Ekren ",
+    "nationalID": "76899876754"
+  },
+  {
+    "patientId": 3,
+    "age": 26,
+    "complaint": "Sivilce ",
+    "fullName": "Sedanur Kesik",
+    "nationalID": "78766511234"
+  },
+  {
+    "patientId": 4,
+    "age": 25,
+    "complaint": "Sivilce",
+    "fullName": "Betül Derdiyok",
+    "nationalID": "27503116106"
+  }
+]

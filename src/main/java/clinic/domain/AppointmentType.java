@@ -5,3 +5,4 @@ public enum AppointmentType {
     CONTROL,
     EMERGENCY
 }
+//TODO : Enhance AppointmentType usage throughout the system.

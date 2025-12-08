@@ -1,7 +1,6 @@
 package clinic.repo;
 
 import clinic.domain.Patient;
-import clinic.util.IdGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -40,6 +39,14 @@ public class PatientRepository {
             }
         }
         return false;
+    }
+
+    public Patient findByNationalId(String natioanlId) {
+        return patients.stream()
+                .filter(patient -> patient.getNationalID()
+                        .equalsIgnoreCase(natioanlId))
+                .findFirst()
+                .orElse(null);
     }
 
     public void addPatient(String fullname, String nationalId, int age, String complaint) {

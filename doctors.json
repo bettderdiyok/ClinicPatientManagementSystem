@@ -1,0 +1,26 @@
+[
+  {
+    "branch": "ONCOLOGY",
+    "doctorId": 1,
+    "fullName": "Mesut Şeker",
+    "nationalID": "47563718273"
+  },
+  {
+    "branch": "FAMILY_MEDICINE",
+    "doctorId": 2,
+    "fullName": "Nalan Erdem ",
+    "nationalID": "76477865432"
+  },
+  {
+    "branch": "ONCOLOGY",
+    "doctorId": 3,
+    "fullName": "Visar Sheu",
+    "nationalID": "54667632516"
+  },
+  {
+    "branch": "DERMATOLOGY",
+    "doctorId": 4,
+    "fullName": "Selin Sancı",
+    "nationalID": "67898765423"
+  }
+]

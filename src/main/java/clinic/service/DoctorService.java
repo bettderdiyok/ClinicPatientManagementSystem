@@ -5,6 +5,7 @@ import clinic.exception.*;
 import clinic.repo.AppointmentRepository;
 import clinic.repo.DoctorDayOffRepository;
 import clinic.repo.DoctorRepository;
+import clinic.util.NationalIdValidator;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class DoctorService {
 
 
     public void addDoctor(String nationalId, String fullName, int branchNum) {
-        if (!isValidNationalId(nationalId)) {
+        if (!NationalIdValidator.isValidNationalId(nationalId)) {
             throw new InvalidNationalIdException("It is invalid id!");
         }
 
@@ -107,10 +108,6 @@ public class DoctorService {
             throw new DoctorNotFoundException("Doctor Not Found!");
         }
         return doctorDayOffRepository.findByDoctorId(doctorId);
-    }
-
-    public boolean isValidNationalId(String nationalId) {
-        return nationalId != null && nationalId.matches("\\d{11}");
     }
 
     public boolean isValidFullName(String fullName) {
