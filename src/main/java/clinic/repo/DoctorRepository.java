@@ -16,7 +16,7 @@ public class DoctorRepository {
             .create();
 
     public DoctorRepository() {
-        loadTheDoctors();
+        loadFromJson();
     }
 
     public ArrayList<Doctor> getDoctorArrayList() {
@@ -43,10 +43,16 @@ public class DoctorRepository {
 
     public void add(Doctor doctor){
         doctorArrayList.add(doctor);
+        saveToJson();
     }
 
     public void delete(int id) {
        doctorArrayList.removeIf(doctor -> doctor.getDoctorId() == id);
+       saveToJson();
+    }
+
+    public void update(){
+        saveToJson();
     }
 
     public void listDoctors(){
@@ -66,7 +72,7 @@ public class DoctorRepository {
                 .orElse(null);
     }
 
-    public void saveToDoctors() {
+    public void saveToJson() {
         try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
             String json = GSON.toJson(doctorArrayList);
             fileWriter.write(json);
@@ -77,7 +83,7 @@ public class DoctorRepository {
 
     }
 
-    public void loadTheDoctors(){
+    public void loadFromJson(){
         File file = new File(FILE_PATH);
         if(!file.exists()){
             return;

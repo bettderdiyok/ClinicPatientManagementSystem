@@ -1,20 +1,25 @@
 package clinic.repo;
 
 import clinic.domain.DoctorDayOff;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DoctorDayOffRepository {
-    private final ArrayList<DoctorDayOff> dayOffs = new ArrayList<>();
+    private ArrayList<DoctorDayOff> dayOffs = new ArrayList<>();
     private static final String FILE_PATH  = "DoctorDayOff.json";
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
-            .create();
+            .registerTypeAdapter(LocalDate.class,
+                    (JsonSerializer<LocalDate>) (src, typeOfSrc, context) ->
+                            new JsonPrimitive(src.toString()))
+            .registerTypeAdapter(LocalDate.class,
+                    (JsonDeserializer<LocalDate>) (json, typeOfT, context) ->
+                    LocalDate.parse(json.getAsString())).create();
 
     public DoctorDayOffRepository() {
         loadFromJson();
@@ -22,6 +27,7 @@ public class DoctorDayOffRepository {
 
     public void addDayOff(DoctorDayOff dayOff) {
         dayOffs.add(dayOff);
+        saveToJson();
     }
 
     public boolean isDoctorOffOnDate(int doctorId, LocalDate time) {
@@ -60,8 +66,14 @@ public class DoctorDayOffRepository {
 
         try(FileReader reader = new FileReader(FILE_PATH)) {
             DoctorDayOff[] dayOffArray = GSON.fromJson(reader, DoctorDayOff[].class);
+            if(dayOffArray == null) {
+                dayOffs = new ArrayList<>();
+            } else {
+                dayOffs = new ArrayList<>(Arrays.asList(dayOffArray));
+            }
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to load day offs from JSON file.", e);
         }
     }
 

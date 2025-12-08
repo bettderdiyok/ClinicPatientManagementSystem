@@ -37,7 +37,7 @@ public class PatientService {
             throw new ValidationException("Invalid complaint.");
         }
         patientRepository.addPatient(fullname, nationalID, age, complaint);
-        patientRepository.saveToPatients();
+
     }
 
     public void deletePatient(int patientId){
@@ -50,7 +50,6 @@ public class PatientService {
             throw new PatientNotFoundException("Patient not found.");
         }
          patientRepository.deletePatient(patientId);
-         patientRepository.saveToPatients();
     }
 
     public void listPatients(){
@@ -74,7 +73,7 @@ public class PatientService {
         if (request.getComplaint() != null) {
             patient.setComplaint(request.getComplaint());
         }
-        patientRepository.saveToPatients();
+        patientRepository.updatePatients();
     }
 
     public boolean isValidNationalID(String nationalId){
@@ -88,6 +87,7 @@ public class PatientService {
     public boolean isValidAge(int age){
         return age > 0 && age <= 120;
     }
+
     public boolean isMinorAge(int age){
         return age < 18;
     }
@@ -95,6 +95,7 @@ public class PatientService {
     public boolean isValidComplaint(String complaint){
         return complaint != null && !complaint.trim().isEmpty() &&  complaint.matches("^[A-Za-zÇçĞğİıÖöŞşÜü\\s]+$");
     }
+
     public boolean isPatientListEmpty(){
         return patientRepository.getPatients().isEmpty();
     }

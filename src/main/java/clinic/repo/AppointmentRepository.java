@@ -49,6 +49,11 @@ public class AppointmentRepository {
 
     public void addAppointment(Appointment appointment){
         appointments.add(appointment);
+        saveToJson();
+    }
+
+    public void updateAppointment(Appointment appointment) {
+        saveToJson();
     }
 
     public void saveToJson() {
@@ -112,5 +117,4 @@ public class AppointmentRepository {
                                 appointment.getTime().toLocalDate().equals(date)
                 );
     }
-
 }

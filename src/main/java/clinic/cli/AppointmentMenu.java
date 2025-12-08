@@ -145,7 +145,6 @@ public class AppointmentMenu {
 
                             request.setTime(timeDate);
                         }
-
                         appointmentService.updateAppointment(appointmentIdNo, request);
                         System.out.println("Appointment updated.");
                         break;

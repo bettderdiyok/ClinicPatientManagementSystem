@@ -17,7 +17,7 @@ public class PatientRepository {
             .create();
 
     public PatientRepository() {
-        loadToPatients();
+        loadFromJson();
     }
 
     public ArrayList<Patient> getPatients() {
@@ -45,10 +45,12 @@ public class PatientRepository {
     public void addPatient(String fullname, String nationalId, int age, String complaint) {
         Patient newPatient = new Patient(fullname, nationalId, age, complaint);
         patients.add(newPatient);
+        saveToJson();
     }
 
     public void deletePatient(int patientId) {
       patients.removeIf(patient -> patient.getPatientId() == patientId);
+      saveToJson();
         /*  ListIterator<Patient> iterator = patients.listIterator();
         while (iterator.hasNext()) {
             Patient currentPatient = iterator.next();
@@ -59,6 +61,10 @@ public class PatientRepository {
         }
 
        */
+    }
+
+    public void updatePatients(){
+        saveToJson();
     }
 
     public void listPatient() {
@@ -84,7 +90,7 @@ public class PatientRepository {
         throw new RuntimeException("Patient not found!");
     }
 
-    public void saveToPatients() {
+    public void saveToJson() {
         try (FileWriter writer = new FileWriter(FILE_PATH)) {
             String json = GSON.toJson(patients);
             writer.write(json);
@@ -93,7 +99,7 @@ public class PatientRepository {
         }
     }
 
-    public void loadToPatients(){
+    public void loadFromJson(){
         File file = new File(FILE_PATH);
         if(!file.exists()) {
             return;
