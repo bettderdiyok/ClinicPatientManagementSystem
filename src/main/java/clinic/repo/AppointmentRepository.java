@@ -4,19 +4,16 @@ import clinic.domain.Appointment;
 import clinic.domain.AppointmentStatus;
 import clinic.util.IdGenerator;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class AppointmentRepository {
-    private static final String FILE_PATH = "appointments.json";
+public class AppointmentRepository extends JsonBaseRepository<Appointment> {
+    private static final Path FILE_PATH = Path.of("appointments.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(LocalDateTime.class,
@@ -27,10 +24,27 @@ public class AppointmentRepository {
                             LocalDateTime.parse(json.getAsString()))
             .create();
 
-    private ArrayList<Appointment> appointments = new ArrayList<>();
+    private final List<Appointment> appointments;
 
     public AppointmentRepository() {
-        loadFromJson();
+        super(FILE_PATH,
+                GSON,
+                new TypeToken<List<Appointment>>() {}.getType());
+
+        this.appointments = new ArrayList<>(readAllInternal());
+        int maxId = appointments.stream()
+                .mapToInt(Appointment::getAppointmentId)
+                .max()
+                .orElse(0);
+
+        IdGenerator.initAppointmentId(maxId);
+
+        markPatAppointmentsAsMissed();
+        saveAll();
+    }
+
+    private void saveAll() {
+        writeAllInternal(appointments);
     }
 
     public boolean existsAppointmentByDoctorId(int doctorId){
@@ -50,46 +64,16 @@ public class AppointmentRepository {
 
     public void addAppointment(Appointment appointment){
         appointments.add(appointment);
-        saveToJson();
+        saveAll();
+
     }
 
     public void updateAppointment(Appointment appointment) {
-        saveToJson();
+        saveAll();
     }
 
-    public void saveToJson() {
-        try (FileWriter writer = new FileWriter(FILE_PATH)){
-            String json = GSON.toJson(appointments);
-            writer.write(json);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save appointments to JSON file.", e);
-        }
-    }
 
-    public void loadFromJson() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) {
-            return; // ilk açılışta dosya yoksa hata vermesin
-        }
-
-        try (FileReader reader = new FileReader(FILE_PATH)) {
-            Appointment[] array = GSON.fromJson(reader, Appointment[].class);
-            appointments = new ArrayList<>(Arrays.asList(array));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load appointments from JSON file.", e);
-        }
-
-        int maxId = appointments.stream()
-                .mapToInt(Appointment::getAppointmentId)
-                .max()
-                .orElse(0);
-
-        IdGenerator.initAppointmentId(maxId);
-        markPatAppointmentsAsMissed();
-        saveToJson();
-    }
-
-    public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
+public boolean existsDoctorAndDateTime(int doctorId, LocalDateTime time) {
         return appointments.stream().anyMatch(appointment -> appointment.getDoctorId() == doctorId && appointment.getTime().equals(time));
     }
 
@@ -127,7 +111,7 @@ public class AppointmentRepository {
         appointments.stream()
                 .filter(appointment -> appointment.getStatus() == AppointmentStatus.BOOKED)
                 .filter(appointment -> appointment.getTime().isBefore(now))
-                .forEach(appointment -> appointment.setStatus(AppointmentStatus.MISSID));
+                .forEach(appointment -> appointment.setStatus(AppointmentStatus.MISSED));
     }
 
 }

@@ -41,7 +41,7 @@ public class PatientService {
         }
 
         if (doctorRepository.getDoctorArrayList().isEmpty()) {
-            throw new ValidationException("There is no doctor in the system.");
+            throw new ValidationException("There is no doctor in the system. You should a doctor firstly.");
         }
 
         patientRepository.addPatient(fullname, nationalID, age, complaint);

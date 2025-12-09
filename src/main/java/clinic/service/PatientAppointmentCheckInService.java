@@ -31,8 +31,6 @@ public class PatientAppointmentCheckInService {
         Patient patient = patientRepository.findByNationalId(patientNationalId);
         int patientSystemId = patient.getPatientId();
 
-
-
         Appointment todayAppointment = findTodayAppointmentForPatient(patientSystemId);
 
         if(todayAppointment == null){
@@ -43,7 +41,7 @@ public class PatientAppointmentCheckInService {
         LocalDateTime appointmentTime = todayAppointment.getTime();
 
         if (appointmentTime.isBefore(now)) {
-            todayAppointment.setStatus(AppointmentStatus.MISSID);
+            todayAppointment.setStatus(AppointmentStatus.MISSED);
             appointmentRepository.updateAppointment(todayAppointment);
             throw  new ValidationException("The appointment time has passed and it is marked as MISSED.");
         }

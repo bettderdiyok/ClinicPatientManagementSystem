@@ -23,6 +23,7 @@ public class MainMenu {
         AppointmentRepository appointmentRepository = new AppointmentRepository();
         PatientRepository patientRepository = new PatientRepository();
 
+
         DoctorService doctorService = new DoctorService(doctorRepository, doctorDayOffRepository, appointmentRepository );
         PatientService patientService = new PatientService(patientRepository, doctorRepository);
         AppointmentService appointmentService = new AppointmentService(appointmentRepository, doctorRepository, patientRepository, doctorDayOffRepository);
@@ -55,9 +56,11 @@ public class MainMenu {
                     String nationalId = input.nextLine();
                     try {
                         appointmentCheckInService.checkIn(nationalId);
+                        System.out.println("Check-in completed.");
                     } catch (ValidationException | NotFoundException e) {
                         System.out.println(e.getMessage());
                     }
+
 
                 case 0:
                     isTrue = false;

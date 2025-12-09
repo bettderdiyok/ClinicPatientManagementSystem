@@ -1,25 +1,41 @@
 package clinic.repo;
 
 import clinic.domain.Patient;
+import clinic.util.IdGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
-public class PatientRepository {
-    ArrayList<Patient> patients = new ArrayList<>();
-    private static final String FILE_PATH = "patients.json";
+public class PatientRepository extends JsonBaseRepository<Patient> {
+    List<Patient> patients;
+    private static final Path FILE_PATH = Path.of("patients.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .create();
 
     public PatientRepository() {
-        loadFromJson();
+        super(FILE_PATH, GSON, new TypeToken<List<Patient>>() {}.getType());
+        this.patients = new ArrayList<>(readAllInternal());
+
+        int maxId = patients.stream()
+                .mapToInt(Patient::getPatientId)
+                .max()
+                .orElse(0);
+
+        IdGenerator.initPatientId(maxId);
+        saveAll();
     }
 
-    public ArrayList<Patient> getPatients() {
+    private void saveAll() {
+        writeAllInternal(patients);
+    }
+
+    public List<Patient> getPatients() {
         return patients;
     }
 
@@ -52,12 +68,14 @@ public class PatientRepository {
     public void addPatient(String fullname, String nationalId, int age, String complaint) {
         Patient newPatient = new Patient(fullname, nationalId, age, complaint);
         patients.add(newPatient);
-        saveToJson();
+        saveAll();
+
     }
 
     public void deletePatient(int patientId) {
       patients.removeIf(patient -> patient.getPatientId() == patientId);
-      saveToJson();
+      saveAll();
+
         /*  ListIterator<Patient> iterator = patients.listIterator();
         while (iterator.hasNext()) {
             Patient currentPatient = iterator.next();
@@ -71,7 +89,7 @@ public class PatientRepository {
     }
 
     public void updatePatients(){
-        saveToJson();
+        saveAll();
     }
 
     public void listPatient() {
@@ -97,26 +115,4 @@ public class PatientRepository {
         throw new RuntimeException("Patient not found!");
     }
 
-    public void saveToJson() {
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
-            String json = GSON.toJson(patients);
-            writer.write(json);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save appointments to JSON file.", e);
-        }
-    }
-
-    public void loadFromJson(){
-        File file = new File(FILE_PATH);
-        if(!file.exists()) {
-            return;
-        }
-
-        try (FileReader reader = new FileReader(FILE_PATH)) {
-            Patient[] array = GSON.fromJson(reader, Patient[].class);
-            patients = new ArrayList<>(Arrays.asList(array));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

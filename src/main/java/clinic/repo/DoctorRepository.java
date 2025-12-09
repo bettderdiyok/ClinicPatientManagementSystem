@@ -1,30 +1,46 @@
 package clinic.repo;
 
 import clinic.domain.Doctor;
+import clinic.util.IdGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
-public class DoctorRepository {
-    private ArrayList<Doctor> doctorArrayList = new ArrayList<>();
-    private static final String FILE_PATH = "doctors.json";
+public class DoctorRepository extends JsonBaseRepository<Doctor> {
+    private final  List<Doctor> doctorList;
+    private static final Path FILE_PATH = Path.of("doctors.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .create();
 
     public DoctorRepository() {
-        loadFromJson();
+        super(FILE_PATH, GSON, new TypeToken<List<Doctor>>() {}.getType());
+        this.doctorList = new ArrayList<>(readAllInternal());
+
+        int maxId = doctorList.stream()
+                        .mapToInt(Doctor:: getDoctorId)
+                                .max()
+                                        .orElse(0);
+
+        IdGenerator.initDoctorId(maxId);
+        saveAll();
     }
 
-    public ArrayList<Doctor> getDoctorArrayList() {
-        return doctorArrayList;
+    private void saveAll() {
+        writeAllInternal(doctorList);
+    }
+
+    public List<Doctor> getDoctorArrayList() {
+        return doctorList;
     }
 
     public boolean existsByNationalId(String nationalId) {
-        for (Doctor doctor : doctorArrayList) {
+        for (Doctor doctor : doctorList) {
             if(doctor.getNationalID().equalsIgnoreCase(nationalId)) {
                 return true;
             }
@@ -33,7 +49,7 @@ public class DoctorRepository {
     }
 
     public boolean existsBySystemId(int doctorId) {
-        for (Doctor doctor : doctorArrayList) {
+        for (Doctor doctor : doctorList) {
             if((doctor.getDoctorId() == doctorId)) {
                 return true;
             }
@@ -42,21 +58,21 @@ public class DoctorRepository {
     }
 
     public void add(Doctor doctor){
-        doctorArrayList.add(doctor);
-        saveToJson();
+        doctorList.add(doctor);
+        saveAll();
     }
 
     public void delete(int id) {
-       doctorArrayList.removeIf(doctor -> doctor.getDoctorId() == id);
-       saveToJson();
+       doctorList.removeIf(doctor -> doctor.getDoctorId() == id);
+       saveAll();
     }
 
     public void update(){
-        saveToJson();
+       saveAll();
     }
 
     public void listDoctors(){
-        for (Doctor doctor : doctorArrayList) {
+        for (Doctor doctor : doctorList) {
             System.out.println(
                     "id : " + doctor.getDoctorId() +
                             " Fullname : " + doctor.getFullName() +
@@ -66,37 +82,11 @@ public class DoctorRepository {
     }
 
     public  Doctor findByDoctorId(int doctorId) {
-        return doctorArrayList.stream()
+        return doctorList.stream()
                 .filter(doctor -> doctor.getDoctorId() == doctorId)
                 .findFirst()
                 .orElse(null);
     }
-
-    public void saveToJson() {
-        try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
-            String json = GSON.toJson(doctorArrayList);
-            fileWriter.write(json);
-        }catch (IOException e) {
-           throw new RuntimeException("Failed to save appointments to JSON file.", e);
-
-        }
-
-    }
-
-    public void loadFromJson(){
-        File file = new File(FILE_PATH);
-        if(!file.exists()){
-            return;
-        }
-
-        try (FileReader fileReader = new FileReader(FILE_PATH)) {
-            Doctor[] array = GSON.fromJson(fileReader, Doctor[].class);
-            doctorArrayList = new ArrayList<>(Arrays.asList(array));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load appointments from JSON file.", e);
-        }
-    }
-
 }
 
 
