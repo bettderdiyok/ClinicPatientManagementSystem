@@ -53,28 +53,37 @@ public class AppointmentMenu {
 
                         System.out.print("Enter Patient ID : ");
                         int patientID = input.nextInt();
-
-                        System.out.println("Enter Appointment date and time : ");
-                        System.out.print("Date : (YYYY-MM-DD)");
-                        String strDate = input.next();
-                        LocalDate date;
-                        try {
-                            date = LocalDate.parse(strDate);
-                        } catch (Exception e) {
-                            System.out.println("Invalid date format.");
-                            break;
-                        }
-                        System.out.print("Hour (09-17): ");
-                        int hour = input.nextInt();
                         input.nextLine();
+                        LocalDateTime time;
 
-                        System.out.print("Minute :  (00-15-30-45):");
-                        int minute = input.nextInt();
-                        input.nextLine();
+                        boolean isEmergency = confirmMessage("Is it urgent? ");
 
-                        LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour, minute);
-                        //getMonth ->ENUM getMonthValue()-> int
-                        appointmentService.createAppointment(doctorID, patientID, time);
+                        if(isEmergency){
+                           time = null;
+                       } else {
+                           System.out.println("Enter Appointment date and time : ");
+                           System.out.print("Date : (YYYY-MM-DD)");
+                           String strDate = input.next();
+                           LocalDate date = null;
+
+                           try {
+                               date = LocalDate.parse(strDate);
+                           } catch (Exception e) {
+                               System.out.println(e.getMessage());
+                           }
+
+                           System.out.print("Hour (09-17): ");
+                           int hour = input.nextInt();
+                           input.nextLine();
+
+                           System.out.print("Minute :  (00-15-30-45):");
+                           int minute = input.nextInt();
+                           input.nextLine();
+                           time = LocalDateTime.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), hour, minute);
+
+                       }
+
+                        appointmentService.createAppointment(doctorID, patientID, time, isEmergency);
                         System.out.println("Appointment created successfully!");
                         break;
                     case 2:
@@ -161,11 +170,13 @@ public class AppointmentMenu {
     }
 
     public static void showTheMenu() {
-        System.out.println("1-Create Appointment\n" +
-                "2-Cancel Appointment \n" +
-                "3-Update Appointment\n" +
-                "4-List\n" +
-                "5-Back to Main Menu\n"
+        System.out.println("""
+                1-Create Appointment\s
+                2-Cancel Appointment\s
+                3-Update Appointment
+                4-List
+                5-Back to Main Menu
+                """
         );
     }
 
@@ -273,7 +284,6 @@ public class AppointmentMenu {
                 });
     }
 
-
     private void listCanceledAppointment(){
         System.out.println("----- CANCELED APPOINTMENTS -----");
 
@@ -298,6 +308,9 @@ public class AppointmentMenu {
         return answer.equals("y") || answer.equals("yes");
     }
 
+
 }
+
+
 
 

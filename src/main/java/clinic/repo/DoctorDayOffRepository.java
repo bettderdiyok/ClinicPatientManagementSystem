@@ -2,16 +2,17 @@ package clinic.repo;
 
 import clinic.domain.DoctorDayOff;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class DoctorDayOffRepository {
-    private ArrayList<DoctorDayOff> dayOffs = new ArrayList<>();
-    private static final String FILE_PATH  = "DoctorDayOff.json";
+public class DoctorDayOffRepository extends JsonBaseRepository<DoctorDayOff> {
+    private List<DoctorDayOff> dayOffs;
+    private static final Path FILE_PATH  = Path.of("DoctorDayOff.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(LocalDate.class,
@@ -22,12 +23,17 @@ public class DoctorDayOffRepository {
                     LocalDate.parse(json.getAsString())).create();
 
     public DoctorDayOffRepository() {
-        loadFromJson();
+        super(FILE_PATH, GSON, new TypeToken<List<DoctorDayOff>> () {}.getType());
+        dayOffs = new ArrayList<>(readAllInternal());
     }
 
     public void addDayOff(DoctorDayOff dayOff) {
         dayOffs.add(dayOff);
-        saveToJson();
+        saveAll();
+    }
+
+    private void saveAll() {
+        writeAllInternal(dayOffs);
     }
 
     public boolean isDoctorOffOnDate(int doctorId, LocalDate time) {
@@ -49,33 +55,6 @@ public class DoctorDayOffRepository {
 
     }
 
-    private void saveToJson(){
-        try(FileWriter writer = new FileWriter(FILE_PATH)) {
-            String json = GSON.toJson(dayOffs);
-            writer.write(json);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadFromJson(){
-        File file = new File(FILE_PATH);
-        if(!file.exists()) {
-            return;
-        }
-
-        try(FileReader reader = new FileReader(FILE_PATH)) {
-            DoctorDayOff[] dayOffArray = GSON.fromJson(reader, DoctorDayOff[].class);
-            if(dayOffArray == null) {
-                dayOffs = new ArrayList<>();
-            } else {
-                dayOffs = new ArrayList<>(Arrays.asList(dayOffArray));
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load day offs from JSON file.", e);
-        }
-    }
 
 
 }

@@ -9,9 +9,12 @@ import clinic.repo.DoctorRepository;
 import clinic.repo.PatientRepository;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
@@ -26,7 +29,9 @@ public class AppointmentService {
         this.doctorDayOffRepository = doctorDayOffRepository;
     }
 
-    public void createAppointment(int doctorId, int patientId, LocalDateTime time){
+    public void createAppointment(int doctorId, int patientId, LocalDateTime time, Boolean isEmergency){
+            LocalDateTime now = LocalDateTime.now();
+            AppointmentType type;
             if (!doctorRepository.existsBySystemId(doctorId)) {
                 throw new DoctorNotFoundException("Doctor not found.");
             }
@@ -34,8 +39,10 @@ public class AppointmentService {
             if(!patientRepository.existsBySystemId(patientId)) {
                 throw  new PatientNotFoundException("Patient Not Found.");
             }
+            if(isEmergency) {
+               time = now;
+            }
 
-            LocalDateTime now = LocalDateTime.now();
             if(time.isBefore(now)) {
                 throw  new InvalidAppointmentTimeException("Appointment time cannot be in the past.");
             }
@@ -71,10 +78,24 @@ public class AppointmentService {
                 throw new PatientAlreadyHasAppointmentThatDayException("You already have an appointment with this doctor on this day.");
             }
 
+             if(isEmergency) {
+                type = AppointmentType.EMERGENCY;
+             } else {
+                 Optional<Appointment> lastOpt = appointmentRepository.findLastAppointmentForPatientAndDoctor(patientId, doctorId);
+                 if(lastOpt.isEmpty()) {
+                    type = AppointmentType.FIRST_VISIT;
+                 } else {
+                     Appointment lastAppointment = lastOpt.get();
+                     if(ChronoUnit.DAYS.between(lastAppointment.getTime().toLocalDate(), now.toLocalDate()) < 10){
+                         type = AppointmentType.CONTROL;
+                     } else {
+                         type = AppointmentType.FIRST_VISIT;
+                     }
+                 }
+             }
              Appointment appointment = new Appointment(doctorId, patientId, time);
+             appointment.setType(type);
              appointment.setStatus(AppointmentStatus.BOOKED);
-             appointment.setType(AppointmentType.FIRST_VISIT);
-
              appointmentRepository.addAppointment(appointment);
     }
 

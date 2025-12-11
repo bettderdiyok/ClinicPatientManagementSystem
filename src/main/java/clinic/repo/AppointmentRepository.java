@@ -10,7 +10,9 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class AppointmentRepository extends JsonBaseRepository<Appointment> {
     private static final Path FILE_PATH = Path.of("appointments.json");
@@ -60,6 +62,12 @@ public class AppointmentRepository extends JsonBaseRepository<Appointment> {
         }
         return false;
         */
+    }
+    public Optional<Appointment> findLastAppointmentForPatientAndDoctor(int patientId, int doctorId) {
+        return appointments.stream()
+                .filter(appointment ->
+                                appointment.getPatientId() == patientId &&
+                                appointment.getDoctorId() == doctorId).max(Comparator.comparing(Appointment ::getTime));
     }
 
     public void addAppointment(Appointment appointment){

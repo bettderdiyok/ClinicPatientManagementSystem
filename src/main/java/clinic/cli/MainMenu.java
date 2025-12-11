@@ -60,8 +60,6 @@ public class MainMenu {
                     } catch (ValidationException | NotFoundException e) {
                         System.out.println(e.getMessage());
                     }
-
-
                 case 0:
                     isTrue = false;
                     break;
