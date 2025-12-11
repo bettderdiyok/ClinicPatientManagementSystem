@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class AppointmentRepository extends JsonBaseRepository<Appointment> {
-    private static final Path FILE_PATH = Path.of("appointments.json");
+    private static final Path FILE_PATH = Path.of("data/appointments.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(LocalDateTime.class,

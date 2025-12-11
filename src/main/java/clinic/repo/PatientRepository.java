@@ -13,7 +13,7 @@ import java.util.List;
 
 public class PatientRepository extends JsonBaseRepository<Patient> {
     List<Patient> patients;
-    private static final Path FILE_PATH = Path.of("patients.json");
+    private static final Path FILE_PATH = Path.of("data/patients.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .create();

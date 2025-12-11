@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DoctorDayOffRepository extends JsonBaseRepository<DoctorDayOff> {
     private List<DoctorDayOff> dayOffs;
-    private static final Path FILE_PATH  = Path.of("DoctorDayOff.json");
+    private static final Path FILE_PATH  = Path.of("data/doctorDayOff.json");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(LocalDate.class,
